@@ -3,592 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/baremux/index.js"></script>
-    <script src="/epoxy/index.mjs" type="module"></script>
-    <script src="/uv/uv.bundle.js"></script>
-    <script src="/uv/uv.config.js"></script>
+    <title>Xylara</title>
+    
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
-    <title>Xylara Browser</title>
+    <script src="/epoxy/index.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="/uv/uv.bundle.js"></script>
+    <script src="/uv/uv.config.js"></script>
+
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes tabIn { from { opacity: 0; transform: translateY(4px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes rumble { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-2px)} 30%{transform:translateX(2px)} 45%{transform:translateX(-1px)} 60%{transform:translateX(1px)} }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.3)} 50%{box-shadow:0 0 40px rgba(139,92,246,0.5)} }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background: #0a0a0f;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 8px 12px;
-            background: #0d0d14;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            flex-shrink: 0;
-        }
-
-        .topbar-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            border: none;
-            background: transparent;
-            color: #8a8a92;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .topbar-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .topbar-btn:active { animation: rumble 0.3s ease; transform: scale(0.9); }
-        .topbar-btn:disabled { opacity: 0.3; pointer-events: none; }
-        .topbar-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
-        .logo-mini {
-            font-weight: 900;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            color: #8b5cf6;
-            padding: 0 8px;
-            flex-shrink: 0;
-            text-decoration: none;
-        }
-
-        .address-bar {
-            flex: 1;
-            display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 0 14px;
-            height: 32px;
-            transition: all 0.2s;
-            max-width: 600px;
-            margin: 0 auto;
+            color: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
         }
 
-        .address-bar:focus-within {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 20px rgba(139,92,246,0.15);
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .lock-icon { color: #555; font-size: 11px; flex-shrink: 0; letter-spacing: 0.5px; }
-
-        .address-bar input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #e8e8f0;
-            font-size: 12px;
-            outline: none;
-            font-family: inherit;
-        }
-
-        .address-bar input::placeholder { color: #55555c; }
-
-        .tabs-bar {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            padding: 5px 8px 0;
-            background: #0a0a0f;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-            overflow-x: auto;
-            flex-shrink: 0;
-            scrollbar-width: none;
-        }
-
-        .tabs-bar::-webkit-scrollbar { display: none; }
-
-        .tab {
+        /* TOPBAR */
+        .topbar {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 7px 12px;
-            border-radius: 8px 8px 0 0;
-            background: transparent;
-            border: 1px solid transparent;
-            color: #8a8a92;
-            cursor: pointer;
-            font-size: 11px;
-            white-space: nowrap;
-            max-width: 150px;
-            min-width: 70px;
-            transition: all 0.15s;
-            flex-shrink: 0;
-            animation: tabIn 0.2s ease;
+            background: rgba(15, 15, 22, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 5px 10px;
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.4s ease;
         }
 
-        .tab:hover { background: rgba(255,255,255,0.04); color: #e8e8f0; }
-        .tab.active { background: #111118; color: #fff; border-color: rgba(255,255,255,0.08); border-bottom-color: transparent; font-weight: 600; }
-
-        .tab-title { overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
-
-        .tab-close {
-            width: 14px; height: 14px; border-radius: 50%; border: none;
-            background: transparent; color: #555; cursor: pointer;
-            font-size: 9px; opacity: 0; transition: all 0.15s; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .tab:hover .tab-close, .tab.active .tab-close { opacity: 1; }
-        .tab-close:hover { background: rgba(220,38,38,0.3); color: #ff6b6b; }
-
-        .new-tab-btn {
-            width: 24px; height: 24px; border-radius: 6px;
-            border: 1px dashed rgba(255,255,255,0.12);
-            background: transparent; cursor: pointer; color: #555;
-            font-size: 14px; flex-shrink: 0; display: flex;
-            align-items: center; justify-content: center;
-            margin-left: 3px; margin-bottom: 4px; transition: all 0.2s;
-        }
-
-        .new-tab-btn:hover { border-color: #8b5cf6; color: #8b5cf6; background: rgba(139,92,246,0.1); }
-
-        .browser-content { flex: 1; position: relative; background: #000; }
-        .browser-content iframe { width: 100%; height: 100%; border: none; display: none; background: #fff; }
-        .browser-content iframe.visible { display: block; }
-
-        .new-tab-page {
-            position: absolute; inset: 0;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            background: #0a0a0f; z-index: 1;
-        }
-        .new-tab-page.hidden { display: none; }
-
-        .new-tab-logo {
-            font-size: 2rem; font-weight: 900; letter-spacing: 5px;
-            color: #8b5cf6; margin-bottom: 4px;
-        }
-
-        .new-tab-sub { font-size: 0.7rem; color: #555; letter-spacing: 2px; margin-bottom: 24px; text-transform: uppercase; }
-
-        .new-tab-search { display: flex; align-items: center; gap: 8px; max-width: 420px; width: 85%; }
-
-        .new-tab-search input {
-            flex: 1; background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px 16px;
-            color: #fff; font-size: 13px; outline: none; font-family: inherit;
-        }
-
-        .new-tab-search input:focus { border-color: #8b5cf6; }
-
-        .new-tab-search button {
-            background: #8b5cf6; border: none; border-radius: 12px;
-            padding: 12px 18px; color: white; font-weight: 700;
-            cursor: pointer; font-family: inherit; font-size: 13px;
+        .topbar a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
             transition: all 0.2s;
+            text-decoration: none;
         }
 
-        .new-tab-search button:hover { background: #a78bfa; }
-
-        .quick-apps { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; justify-content: center; }
-
-        .quick-app {
-            width: 52px; height: 52px; border-radius: 12px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s;
+        .topbar a:hover {
+            background: rgba(139,92,246,0.25);
         }
 
-        .quick-app:hover { background: rgba(139,92,246,0.15); border-color: #8b5cf6; transform: translateY(-2px); }
-        .quick-app img { width: 22px; height: 22px; object-fit: contain; border-radius: 4px; }
+        .topbar a.active {
+            background: rgba(139,92,246,0.3);
+        }
+
+        .topbar a:active {
+            animation: rumble 0.3s ease;
+        }
+
+        .topbar svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            fill: none;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #fff;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        }
+
+        .tagline {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            max-width: 520px;
+            margin: 0 auto;
+            background: rgba(15, 15, 22, 0.8);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 6px;
+            backdrop-filter: blur(20px);
+            animation: slideUp 0.6s ease;
+            transition: all 0.3s;
+        }
+
+        .search-container:focus-within {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 30px rgba(139,92,246,0.2);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 13px 18px;
+            font-size: 0.9rem;
+            outline: none;
+            background: transparent;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .search-button {
+            background: #8b5cf6;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 18px;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.2s;
+            font-family: inherit;
+            animation: pulse 2.5s infinite;
+        }
+
+        .search-button:hover {
+            background: #a78bfa;
+            transform: translateY(-1px);
+        }
+
+        .search-button:active {
+            transform: scale(0.94);
+            animation: rumble 0.3s ease;
+        }
+
+        .app-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 22px;
+            gap: 10px;
+            flex-wrap: wrap;
+            animation: slideUp 0.6s ease 0.15s both;
+        }
+
+        .app-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(15, 15, 22, 0.7);
+            backdrop-filter: blur(15px);
+            cursor: pointer;
+            outline: none;
+            border: 1px solid rgba(255,255,255,0.12);
+            color: white;
+            text-decoration: none;
+            transition: all 0.25s;
+            overflow: hidden;
+        }
+
+        .app-button:hover {
+            background: rgba(139,92,246,0.25);
+            border-color: #8b5cf6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+        }
+
+        .app-button:active {
+            transform: scale(0.88);
+            animation: rumble 0.3s ease;
+        }
+
+        .app-button img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            opacity: 0.85;
+        }
+
+        .app-button:hover img {
+            opacity: 1;
+        }
+
+        #add-app-button {
+            background: rgba(15, 15, 22, 0.7);
+            border: 1.5px dashed rgba(255,255,255,0.2);
+        }
+
+        #add-app-button:hover {
+            border-color: #8b5cf6;
+            background: rgba(139,92,246,0.15);
+        }
+
+        .venusFooter {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 10px;
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .reset-button {
+            position: fixed;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 15, 22, 0.7);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+            font-family: inherit;
+        }
+
+        .reset-button:hover {
+            background: rgba(139,92,246,0.3);
+            color: #fff;
+            border-color: #8b5cf6;
+        }
 
         @media (max-width: 600px) {
-            .logo-mini { display: none; }
-            .address-bar { max-width: 100%; }
-            .new-tab-logo { font-size: 1.5rem; }
+            .logo-text { font-size: 1.8rem; }
+            .search-container { max-width: 90%; }
+            .app-button { width: 42px; height: 42px; border-radius: 12px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- TOPBAR -->
     <div class="topbar">
-        <a href="/" class="logo-mini" title="Home">XYLARA</a>
-        <button class="topbar-btn" id="btn-back" disabled title="Back">
-            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <button class="topbar-btn" id="btn-forward" disabled title="Forward">
-            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        <button class="topbar-btn" id="btn-refresh" title="Refresh">
-            <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
-        </button>
-        <button class="topbar-btn" id="btn-home" title="New Tab">
+        <a href="/" class="active" title="Home">
             <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
-        </button>
-        <div class="address-bar">
-            <span class="lock-icon">https</span>
-            <input type="text" id="url-input" placeholder="Search or enter URL..." autocomplete="off">
-        </div>
+        </a>
+        <a href="/settings" title="Settings">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </a>
     </div>
 
-    <div class="tabs-bar" id="tabs-bar">
-        <button class="new-tab-btn" id="new-tab-btn" title="New Tab">+</button>
-    </div>
-
-    <div class="browser-content" id="browser-content">
-        <iframe id="Frame" src="" style="display:none;"></iframe>
-        <div class="new-tab-page" id="new-tab-page">
-            <div class="new-tab-logo">XYLARA</div>
-            <div class="new-tab-sub">Browse Freely</div>
-            <div class="new-tab-search">
-                <input type="text" id="new-tab-search-input" placeholder="Search or enter URL...">
-                <button id="new-tab-search-btn">Go</button>
-            </div>
-            <div class="quick-apps">
-                <div class="quick-app" data-url="https://discord.com">
-                    <img src="/assets/svg/discord.svg" alt="Discord">
-                </div>
-                <div class="quick-app" data-url="https://youtube.com">
-                    <img src="/assets/svg/youtube.svg" alt="YouTube">
-                </div>
-                <div class="quick-app" data-url="https://spotify.com">
-                    <img src="/assets/svg/spotify.svg" alt="Spotify">
-                </div>
-                <div class="quick-app" data-url="https://github.com">
-                    <img src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="GitHub">
-                </div>
+    <div class="container">
+        <div class="logo-text">XYLARA</div>
+        <div class="tagline">Browse Freely</div>
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search or enter a URL...">
+            <button class="search-button">Go</button>
+        </div>
+        <div class="app-buttons">
+            <a href="#" class="app-button" data-url="https://discord.com">
+                <img src="/assets/svg/discord.svg" alt="Discord">
+            </a>
+            <a href="#" class="app-button" data-url="https://play.geforcenow.com">
+                <img src="/assets/svg/geforcenow.svg" alt="GeForce Now">
+            </a>
+            <a href="#" class="app-button" data-url="https://youtube.com">
+                <img src="/assets/svg/youtube.svg" alt="YouTube">
+            </a>
+            <a href="#" class="app-button" data-url="https://spotify.com">
+                <img src="/assets/svg/spotify.svg" alt="Spotify">
+            </a>
+            <a href="#" class="app-button" data-url="https://x.com">
+                <img src="/assets/svg/x.svg" alt="X">
+            </a>
+            <a href="#" class="app-button" id="add-app-button">
+                <img src="/assets/svg/plus.svg" alt="Add App">
+            </a>
+        </div>
+        <div id="add-app-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; backdrop-filter: blur(8px); color: white;">
+            <div style="padding: 24px; border-radius: 16px; text-align: center; background: rgba(15, 15, 22, 0.95);">
+                <h3 style="margin-bottom: 14px; font-weight: 700;">Add New App</h3>
+                <label style="font-size: 0.7rem; display: block; margin-bottom: 4px;">App Name</label>
+                <input type="text" id="app-name" placeholder="Netflix" style="border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); color: white; width: 220px;"><br>
+                <label style="font-size: 0.7rem; display: block; margin: 8px 0 4px;">App URL</label>
+                <input type="text" id="app-url" placeholder="netflix.com" style="border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); color: white; width: 220px;"><br><br>
+                <button id="add-app-submit" style="background: #8b5cf6; border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; color: white; font-weight: 600;">Add</button>
+                <button id="add-app-cancel" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 9px 16px; cursor: pointer; color: rgba(255,255,255,0.6); margin-left: 6px;">Cancel</button>
             </div>
         </div>
     </div>
+    <button class="reset-button" onclick="resetSiteData()">Reset Site Data</button>
+    <a href="#" class="venusFooter">Venus integration</a>
 
     <script>
-        const frameEl = document.getElementById("Frame");
-        const urlInput = document.getElementById("url-input");
-        const tabsBar = document.getElementById("tabs-bar");
-        const newTabBtn = document.getElementById("new-tab-btn");
-        const newTabPage = document.getElementById("new-tab-page");
-
-        let tabs = [];
-        let activeTabId = null;
-        let scramjetFrame = null;
-
-        class Tab {
-            constructor(id, url, title) {
-                this.id = id;
-                this.url = url || null;
-                this.title = title || 'New Tab';
-                this.history = [];
-                this.historyIndex = -1;
-            }
-            pushHistory(url) {
-                if (this.historyIndex < this.history.length - 1) {
-                    this.history = this.history.slice(0, this.historyIndex + 1);
-                }
-                this.history.push(url);
-                this.historyIndex = this.history.length - 1;
-            }
-            canGoBack() { return this.historyIndex > 0; }
-            canGoForward() { return this.historyIndex < this.history.length - 1; }
-            getCurrentUrl() {
-                if (this.historyIndex >= 0 && this.historyIndex < this.history.length) {
-                    return this.history[this.historyIndex];
-                }
-                return this.url;
-            }
-        }
-
-        function createTabId() {
-            return 't' + Date.now() + Math.random().toString(36).substr(2, 4);
-        }
-
-        function addTab(url, title) {
-            const id = createTabId();
-            const tab = new Tab(id, url, title || (url ? getHostname(url) : 'New Tab'));
-            tabs.push(tab);
-            renderTabs();
-            switchTab(id);
-            if (url) navigateInTab(id, url);
-            return tab;
-        }
-
-        function closeTab(id) {
-            if (tabs.length <= 1) {
-                tabs = [];
-                addTab(null);
-                return;
-            }
-            const idx = tabs.findIndex(t => t.id === id);
-            if (idx === -1) return;
-            tabs.splice(idx, 1);
-            if (activeTabId === id) {
-                const ni = Math.min(idx, tabs.length - 1);
-                activeTabId = tabs[ni].id;
-                updateActiveTab();
-            }
-            renderTabs();
-        }
-
-        function switchTab(id) {
-            activeTabId = id;
-            updateActiveTab();
-            renderTabs();
-        }
-
-        function updateActiveTab() {
-            const tab = tabs.find(t => t.id === activeTabId);
-            if (!tab) return;
-
-            if (tab.url) {
-                frameEl.style.display = 'block';
-                newTabPage.classList.add('hidden');
-                urlInput.value = tab.url;
-            } else {
-                frameEl.style.display = 'none';
-                newTabPage.classList.remove('hidden');
-                urlInput.value = '';
-            }
-
-            document.getElementById('btn-back').disabled = !tab.canGoBack();
-            document.getElementById('btn-forward').disabled = !tab.canGoForward();
-        }
-
-        function getHostname(url) {
+        function saveAndNavigate(url) {
             try {
-                return new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace('www.', '');
-            } catch(e) {
-                return url.substring(0, 20) || 'New Tab';
-            }
-        }
-
-        function makeUrl(query) {
-            query = String(query).trim();
-            if (!query) return null;
-            
-            if (/^https?:\/\//i.test(query)) return query;
-            
-            if (query.includes('.') && !query.includes(' ')) {
-                return 'https://' + query;
-            }
-            
-            const engine = localStorage.getItem('search') || 'https://www.google.com/search?q=';
-            return engine + encodeURIComponent(query);
-        }
-
-        function navigateInTab(id, url) {
-            const tab = tabs.find(t => t.id === id);
-            if (!tab) return;
-            
-            try {
-                url = new URL(url).toString();
+                const validUrl = new URL(url).toString();
+                localStorage.setItem("url", validUrl);
+                localStorage.setItem("proxy", "ultraviolet");
+                window.location.href = "/search";
             } catch(e) {
                 console.error('Invalid URL:', url);
-                return;
-            }
-            
-            tab.pushHistory(url);
-            tab.url = url;
-            tab.title = getHostname(url);
-            renderTabs();
-            
-            if (activeTabId === id) {
-                loadUrl(url);
             }
         }
 
-        function loadUrl(url) {
-            try {
-                const parsed = new URL(url);
-                url = parsed.toString();
-            } catch(e) {
-                console.error('Cannot load invalid URL:', url);
-                return;
-            }
+        function handleSearch(query) {
+            query = query.trim();
+            if (!query) return;
             
-            frameEl.style.display = 'block';
-            newTabPage.classList.add('hidden');
-            urlInput.value = url;
-            
-            const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
-            
-            if (proxyType === 'ultraviolet' && typeof __uv$config !== 'undefined') {
-                try {
-                    const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
-                    frameEl.src = encoded;
-                } catch(e) {
-                    console.error('UV encode error, falling back to Scramjet:', e);
-                    if (scramjetFrame) scramjetFrame.go(url);
-                    else frameEl.src = url;
-                }
+            let url;
+            if (/^https?:\/\//i.test(query)) {
+                url = query;
+            } else if (query.includes('.') && !query.includes(' ')) {
+                url = 'https://' + query;
             } else {
-                if (scramjetFrame) {
-                    scramjetFrame.go(url);
-                } else {
-                    frameEl.src = url;
-                }
+                url = (localStorage.getItem('search') || 'https://www.google.com/search?q=') + encodeURIComponent(query);
             }
-        }
-
-        function renderTabs() {
-            tabsBar.querySelectorAll('.tab').forEach(el => el.remove());
             
-            tabs.forEach(tab => {
-                const el = document.createElement('div');
-                el.className = 'tab' + (tab.id === activeTabId ? ' active' : '');
-                el.innerHTML = '<span class="tab-title">' + escapeHtml(tab.title || 'New Tab') + '</span>' +
-                    (tabs.length > 1 ? '<button class="tab-close">X</button>' : '');
-                el.querySelector('.tab-title').addEventListener('click', () => switchTab(tab.id));
-                const cb = el.querySelector('.tab-close');
-                if (cb) cb.addEventListener('click', (e) => { e.stopPropagation(); closeTab(tab.id); });
-                tabsBar.insertBefore(el, newTabBtn);
+            saveAndNavigate(url);
+        }
+
+        function resetSiteData() {
+            if (confirm("Reset all settings, custom apps, and site data?")) {
+                localStorage.clear();
+                window.location.reload();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultBg = '/assets/backgrounds/foggy-forest.png';
+            let bg = localStorage.getItem('bg') || defaultBg;
+            document.body.style.backgroundImage = `url('${bg}')`;
+
+            const searchInput = document.querySelector('.search-input');
+            const searchButton = document.querySelector('.search-button');
+            const appButtonsDiv = document.querySelector('.app-buttons');
+            const addAppButton = document.getElementById('add-app-button');
+
+            // Search
+            searchButton.addEventListener('click', () => handleSearch(searchInput.value));
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleSearch(searchInput.value);
             });
-        }
 
-        function escapeHtml(s) {
-            const d = document.createElement('div');
-            d.textContent = s;
-            return d.innerHTML;
-        }
+            // App shortcuts
+            document.querySelectorAll('.app-button[data-url]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    saveAndNavigate(btn.dataset.url);
+                });
+            });
 
-        // Event listeners
-        newTabBtn.addEventListener('click', () => addTab(null));
-
-        document.getElementById('btn-home').addEventListener('click', () => {
-            addTab(null);
-        });
-
-        document.getElementById('btn-refresh').addEventListener('click', () => {
-            const tab = tabs.find(t => t.id === activeTabId);
-            if (tab && tab.url) loadUrl(tab.url);
-        });
-
-        document.getElementById('btn-back').addEventListener('click', () => {
-            const tab = tabs.find(t => t.id === activeTabId);
-            if (tab && tab.canGoBack()) {
-                tab.historyIndex--;
-                const url = tab.history[tab.historyIndex];
-                tab.url = url;
-                loadUrl(url);
-                urlInput.value = url;
-                document.getElementById('btn-back').disabled = !tab.canGoBack();
-                document.getElementById('btn-forward').disabled = !tab.canGoForward();
-            }
-        });
-
-        document.getElementById('btn-forward').addEventListener('click', () => {
-            const tab = tabs.find(t => t.id === activeTabId);
-            if (tab && tab.canGoForward()) {
-                tab.historyIndex++;
-                const url = tab.history[tab.historyIndex];
-                tab.url = url;
-                loadUrl(url);
-                urlInput.value = url;
-                document.getElementById('btn-back').disabled = !tab.canGoBack();
-                document.getElementById('btn-forward').disabled = !tab.canGoForward();
-            }
-        });
-
-        urlInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const url = makeUrl(urlInput.value);
-                if (url) {
-                    const tab = tabs.find(t => t.id === activeTabId);
-                    if (tab) navigateInTab(activeTabId, url);
-                    else addTab(url);
+            // Custom apps
+            function createAppButton(appName, appUrl) {
+                const appButton = document.createElement('a');
+                appButton.href = '#';
+                appButton.classList.add('app-button');
+                appButton.dataset.url = appUrl;
+                try {
+                    const domain = new URL(appUrl).hostname;
+                    appButton.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" alt="${appName}">`;
+                } catch(e) {
+                    appButton.textContent = appName.substring(0, 2).toUpperCase();
                 }
+                appButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    saveAndNavigate(appUrl);
+                });
+                appButton.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    const apps = JSON.parse(localStorage.getItem('apps') || '[]');
+                    const filtered = apps.filter(a => a.url !== appUrl);
+                    localStorage.setItem('apps', JSON.stringify(filtered));
+                    appButton.remove();
+                });
+                return appButton;
             }
-        });
 
-        document.getElementById('new-tab-search-btn').addEventListener('click', () => {
-            const input = document.getElementById('new-tab-search-input');
-            const url = makeUrl(input.value);
-            if (url) {
-                const tab = tabs.find(t => t.id === activeTabId);
-                if (tab) navigateInTab(activeTabId, url);
-                input.value = '';
-            }
-        });
+            let apps = JSON.parse(localStorage.getItem('apps') || '[]');
+            apps.forEach(app => {
+                appButtonsDiv.insertBefore(createAppButton(app.name, app.url), addAppButton);
+            });
 
-        document.getElementById('new-tab-search-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('new-tab-search-btn').click();
-        });
+            // Add app modal
+            const addAppModal = document.getElementById('add-app-modal');
+            const addAppSubmit = document.getElementById('add-app-submit');
+            const addAppCancel = document.getElementById('add-app-cancel');
+            const appNameInput = document.getElementById('app-name');
+            const appUrlInput = document.getElementById('app-url');
 
-        document.querySelectorAll('.quick-app').forEach(app => {
-            app.addEventListener('click', () => {
-                let url = app.dataset.url;
-                if (!url) return;
-                if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                    url = 'https://' + url;
-                }
-                const tab = tabs.find(t => t.id === activeTabId);
-                if (tab) navigateInTab(activeTabId, url);
-                else addTab(url);
+            addAppButton.addEventListener('click', () => addAppModal.style.display = 'flex');
+            addAppCancel.addEventListener('click', () => addAppModal.style.display = 'none');
+            addAppSubmit.addEventListener('click', () => {
+                const name = appNameInput.value.trim();
+                let url = appUrlInput.value.trim();
+                if (!name || !url) return;
+                if (!url.startsWith('http')) url = 'https://' + url;
+                apps.push({ name, url });
+                localStorage.setItem('apps', JSON.stringify(apps));
+                appButtonsDiv.insertBefore(createAppButton(name, url), addAppButton);
+                addAppModal.style.display = 'none';
+                appNameInput.value = '';
+                appUrlInput.value = '';
             });
         });
-
-        // Initialize
-        async function init() {
-            try {
-                const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-                const wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
-                const transport = localStorage.getItem("transport") || "libcurl";
-                const transportPath = transport === "epoxy" ? "/epoxy/index.mjs" : "/libcurl/index.mjs";
-                if (await connection.getTransport() !== transportPath) {
-                    await connection.setTransport(transportPath, [{ wisp: wispUrl }]);
-                }
-            } catch (err) {}
-
-            try {
-                await navigator.serviceWorker.ready;
-                const serviceworker = navigator.serviceWorker.controller ?? (await navigator.serviceWorker.ready).active;
-                let wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
-                let EpoxyTransport;
-                if (self.EpoxyTransport) {
-                    EpoxyTransport = self.EpoxyTransport.EpoxyTransport || self.EpoxyTransport.default || self.EpoxyTransport;
-                } else {
-                    const epoxyModule = await import('/epoxy/index.mjs');
-                    EpoxyTransport = epoxyModule.EpoxyTransport || epoxyModule.default;
-                }
-                const transport = new EpoxyTransport({ wisp: wispUrl });
-                await transport.init();
-                const { Controller } = $scramjetController;
-                const { defaultConfig } = $scramjet;
-                const scramjet = new Controller({ serviceworker, transport, scramjetConfig: defaultConfig });
-                await scramjet.wait();
-                window.sj = scramjet;
-                scramjetFrame = scramjet.createFrame(frameEl);
-            } catch (error) {}
-
-            const savedUrl = localStorage.getItem("url");
-            if (savedUrl) {
-                localStorage.removeItem("url");
-                let finalUrl = savedUrl;
-                try {
-                    finalUrl = new URL(savedUrl).toString();
-                } catch(e) {
-                    if (!finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
-                }
-                addTab(finalUrl);
-            } else {
-                addTab(null);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", init);
     </script>
 </body>
 </html>
