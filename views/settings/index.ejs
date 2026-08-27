@@ -1,206 +1,571 @@
-<%- include('../parts/topbar') %>
-<%- include('../parts/sidebar') %>
-<script src="https://app.rybbit.io/api/script.js" data-site-id="8b65ec526edf" defer></script>
-<title>Xylara</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xylara - Settings</title>
+    <script src="https://app.rybbit.io/api/script.js" data-site-id="8b65ec526edf" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-<div class="settings-container">
-    <div class="setting-item">
-        <label for="type">Type</label>
-        <select id="type">
-            <option value="ultraviolet">Ultraviolet</option>
-            <option value="scramjet">Scramjet</option>
-        </select>
-    </div>
-</div>
-
-<div class="settings-container">
-    <div class="setting-item">
-        <label for="search-engine">Search Engine</label>
-        <select id="search-engine">
-            <option value="https://www.google.com/search?q=">Google</option>
-            <option value="https://www.bing.com/search?q=">Bing</option>
-            <option value="https://search.brave.com/search?q=">Brave</option>
-            <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
-            <option value="https://www.ecosia.org/search?q=">Ecosia</option>
-        </select>
-    </div>
-</div>
-
-<div class="settings-container">
-    <div class="setting-item">
-        <label for="transport-type">Transport</label>
-        <select id="transport-type">
-            <option value="libcurl">Libcurl</option>
-            <option value="epoxy">Epoxy</option>
-        </select>
-    </div>
-</div>
-
-<div class="settings-container">
-    <div class="setting-item">
-        <label for="wisp-server-type">Wisp Server</label>
-        <select id="wisp-server-type">
-            <option value="default">Default</option>
-            <option value="custom">Custom</option>
-        </select>
-    </div>
-    <div class="setting-item" id="custom-wisp-server-container" style="display: none;">
-        <label for="custom-wisp-server-input">Custom Wisp URL</label>
-        <input type="text" id="custom-wisp-server-input" placeholder="wss://your-custom-wisp-server.com/wisp/">
-    </div>
-</div>
-
-<style>
-    body {
-        background-size: cover;
-        background-attachment: fixed;
-        background-position: center;
-        color: white;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        margin-left: 200px;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        min-height: 100vh;
-    }
-
-    .settings-container {
-        background-color: rgba(0, 0, 0, 0.5);
-        padding: 20px;
-        border-radius: 10px;
-        width: 80%;
-        max-width: 600px;
-        margin-top: 65px;
-    }
-
-    .setting-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .setting-item:last-child {
-        margin-bottom: 0;
-    }
-
-    .setting-item label {
-        font-size: 1.1em;
-        margin-right: 10px;
-    }
-
-    .setting-item select {
-        padding: 8px;
-        border-radius: 5px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        background-color: rgba(255, 255, 255, 0.1);
-        color: white;
-        font-size: 1em;
-        cursor: pointer;
-    }
-
-    .setting-item select option {
-        background-color: #333;
-        color: white;
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const defaultBg = '/assets/backgrounds/foggy-forest.png';
-        let bg = localStorage.getItem('bg');
-        if (!bg) {
-            bg = defaultBg;
-            localStorage.setItem('bg', bg);
-        }
-        document.body.style.backgroundImage = `url('${bg}')`;
-        
-        const proxyTypeSelect = document.getElementById('type');
-
-        if (!localStorage.getItem('proxy')) {
-            localStorage.setItem('proxy', 'ultraviolet');
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        proxyTypeSelect.value = localStorage.getItem('proxy');
-
-        proxyTypeSelect.addEventListener('change', (event) => {
-            localStorage.setItem('proxy', event.target.value);
-        });
-
-        const searchEngineSelect = document.getElementById('search-engine');
-
-        if (!localStorage.getItem('search')) {
-            localStorage.setItem('search', 'https://www.google.com/search?q=');
-        }
-
-        searchEngineSelect.value = localStorage.getItem('search');
-
-        searchEngineSelect.addEventListener('change', (event) => {
-            localStorage.setItem('search', event.target.value);
-        });
-
-        const transportTypeSelect = document.getElementById('transport-type');
-
-        if (!localStorage.getItem('transport')) {
-            localStorage.setItem('transport', 'libcurl');
-        }
-
-        transportTypeSelect.value = localStorage.getItem('transport');
-
-        transportTypeSelect.addEventListener('change', (event) => {
-            localStorage.setItem('transport', event.target.value);
-        });
-
-        const wispServerTypeSelect = document.getElementById('wisp-server-type');
-        const customWispServerContainer = document.getElementById('custom-wisp-server-container');
-        const customWispServerInput = document.getElementById('custom-wisp-server-input');
-
-        const defaultWispUrl = `wss://${window.location.host}/wisp/`;
-
-        if (!localStorage.getItem('wisp')) {
-            localStorage.setItem('wisp', defaultWispUrl);
-        }
-
-        const currentWispUrl = localStorage.getItem('wisp');
-        if (currentWispUrl === defaultWispUrl) {
-            wispServerTypeSelect.value = 'default';
-            customWispServerInput.value = '';
-        } else {
-            wispServerTypeSelect.value = 'custom';
-            customWispServerInput.value = currentWispUrl;
-        }
-
-        const updateWispServerVisibility = () => {
-            if (wispServerTypeSelect.value === 'custom') {
-                customWispServerContainer.style.display = 'flex';
-            } else {
-                customWispServerContainer.style.display = 'none';
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
             }
-        };
-
-        updateWispServerVisibility();
-
-        wispServerTypeSelect.addEventListener('change', (event) => {
-            const selectedType = event.target.value;
-            if (selectedType === 'default') {
-                localStorage.setItem('wisp', defaultWispUrl);
-            } else {
-                localStorage.setItem('wisp', customWispServerInput.value);
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
+
+        @keyframes rumble {
+            0%, 100% { transform: translateX(0); }
+            15% { transform: translateX(-2px); }
+            30% { transform: translateX(2px); }
+            45% { transform: translateX(-1px); }
+            60% { transform: translateX(1px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            50% {
+                transform: translate(25px, -20px) scale(1.08);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+            background: #090912;
+        }
+
+        body {
+            background-color: #090912;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(6, 6, 15, 0.84), rgba(20, 12, 39, 0.68)),
+                rgba(0, 0, 0, 0.35);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 12%;
+            left: 50%;
+            width: 420px;
+            height: 420px;
+            background: radial-gradient(
+                circle,
+                rgba(139, 92, 246, 0.24) 0%,
+                rgba(91, 33, 182, 0.1) 38%,
+                transparent 72%
+            );
+            filter: blur(15px);
+            transform: translateX(-50%);
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ============ TOPBAR ============ */
+
+        .topbar {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(12, 11, 25, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 18px;
+            padding: 6px;
+            box-shadow:
+                0 12px 35px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .topbar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0.08),
+                transparent 40%,
+                rgba(139, 92, 246, 0.1)
+            );
+            pointer-events: none;
+        }
+
+        .topbar a {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 38px;
+            border-radius: 12px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .topbar a:hover {
+            background: rgba(139, 92, 246, 0.24);
+            transform: translateY(-2px);
+        }
+
+        .topbar a.active {
+            background: linear-gradient(
+                135deg,
+                rgba(139, 92, 246, 0.48),
+                rgba(109, 40, 217, 0.26)
+            );
+            box-shadow:
+                0 5px 18px rgba(139, 92, 246, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .topbar a:active {
+            animation: rumble 0.3s ease;
+        }
+
+        .topbar svg {
+            width: 18px;
+            height: 18px;
+            stroke: rgba(255, 255, 255, 0.9);
+            fill: none;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all 0.25s ease;
+        }
+
+        .topbar a:hover svg,
+        .topbar a.active svg {
+            stroke: #ffffff;
+            filter: drop-shadow(0 0 6px rgba(196, 181, 253, 0.8));
+        }
+
+        /* ============ SETTINGS ============ */
+
+        .settings-wrapper {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 560px);
+            padding: 108px 22px 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .settings-wrapper::before {
+            content: 'Settings';
+            display: block;
+            margin: 0 4px 6px;
+            color: #ffffff;
+            font-size: clamp(1.8rem, 5vw, 2.35rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-shadow: 0 4px 25px rgba(139, 92, 246, 0.35);
+        }
+
+        .settings-wrapper::after {
+            content: 'Make Sure to use Duckduckgo Goggle aint workin :sob';
+            display: block;
+            order: -1;
+            margin: -12px 4px 3px;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.86rem;
+            letter-spacing: 0.2px;
+        }
+
+        .settings-container {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(29, 24, 51, 0.78),
+                    rgba(13, 13, 25, 0.76)
+                );
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            padding: 20px 22px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            box-shadow:
+                0 12px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            animation: slideUp 0.5s ease both;
+            transition: all 0.28s ease;
+        }
+
+        .settings-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                #a78bfa,
+                #7c3aed,
+                transparent
+            );
+            opacity: 0.75;
+        }
+
+        .settings-container::after {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -70px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.1);
+            filter: blur(24px);
+            pointer-events: none;
+        }
+
+        .settings-container:hover {
+            border-color: rgba(167, 139, 250, 0.5);
+            transform: translateY(-3px);
+            box-shadow:
+                0 16px 35px rgba(0, 0, 0, 0.3),
+                0 8px 30px rgba(139, 92, 246, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .settings-container:active {
+            animation: rumble 0.3s ease;
+        }
+
+        .setting-item {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            min-height: 38px;
+            margin-bottom: 14px;
+        }
+
+        .setting-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .setting-item label {
+            font-size: 0.82rem;
+            margin-right: 10px;
+            color: rgba(255, 255, 255, 0.82);
+            font-weight: 600;
+            letter-spacing: 0.25px;
+        }
+
+        .setting-item select,
+        .setting-item input {
+            min-height: 38px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.17);
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.12),
+                    rgba(255, 255, 255, 0.055)
+                );
+            color: white;
+            font-size: 0.8rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.25s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .setting-item select {
+            min-width: 150px;
+            padding: 8px 34px 8px 13px;
+            cursor: pointer;
+        }
+
+        .setting-item input {
+            width: 235px;
+            padding: 8px 13px;
+        }
+
+        .setting-item select:hover,
+        .setting-item input:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(167, 139, 250, 0.55);
+        }
+
+        .setting-item select:focus,
+        .setting-item input:focus {
+            border-color: #a78bfa;
+            box-shadow:
+                0 0 0 3px rgba(139, 92, 246, 0.13),
+                0 0 18px rgba(139, 92, 246, 0.2);
+        }
+
+        .setting-item select option {
+            background-color: #171323;
+            color: white;
+        }
+
+        .setting-item input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                top: 12px;
+            }
+
+            .settings-wrapper {
+                padding: 92px 14px 34px;
+                gap: 13px;
+            }
+
+            .settings-wrapper::before {
+                margin-left: 2px;
+            }
+
+            .settings-wrapper::after {
+                margin-left: 2px;
+            }
+
+            .settings-container {
+                padding: 17px 17px;
+                border-radius: 15px;
+            }
+
+            .setting-item {
+                gap: 12px;
+            }
+
+            .setting-item label {
+                font-size: 0.76rem;
+            }
+
+            .setting-item select {
+                min-width: 132px;
+                max-width: 52%;
+                padding-left: 10px;
+                padding-right: 25px;
+            }
+
+            .setting-item input {
+                width: 52%;
+                min-width: 0;
+            }
+
+            #custom-wisp-server-container {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .setting-item {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .setting-item select,
+            .setting-item input {
+                width: 100%;
+                max-width: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <a href="/" title="Home">
+            <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
+        </a>
+        <a href="/settings" class="active" title="Settings">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </a>
+    </div>
+
+    <div class="settings-wrapper">
+        <div class="settings-container" style="animation-delay: 0.05s;">
+            <div class="setting-item">
+                <label for="type">Proxy Type</label>
+                <select id="type">
+                    <option value="ultraviolet">Ultraviolet</option>
+                    <option value="scramjet">Scramjet</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="settings-container" style="animation-delay: 0.1s;">
+            <div class="setting-item">
+                <label for="search-engine">Search Engine</label>
+                <select id="search-engine">
+                    <option value="https://www.google.com/search?q=">Google</option>
+                    <option value="https://www.bing.com/search?q=">Bing</option>
+                    <option value="https://search.brave.com/search?q=">Brave</option>
+                    <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
+                    <option value="https://www.ecosia.org/search?q=">Ecosia</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="settings-container" style="animation-delay: 0.15s;">
+            <div class="setting-item">
+                <label for="transport-type">Transport</label>
+                <select id="transport-type">
+                    <option value="libcurl">Libcurl</option>
+                    <option value="epoxy">Epoxy</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="settings-container" style="animation-delay: 0.2s;">
+            <div class="setting-item">
+                <label for="wisp-server-type">Wisp Server</label>
+                <select id="wisp-server-type">
+                    <option value="default">Default</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+            <div class="setting-item" id="custom-wisp-server-container" style="display: none;">
+                <label for="custom-wisp-server-input">Custom Wisp URL</label>
+                <input type="text" id="custom-wisp-server-input" placeholder="wss://your-wisp.com/wisp/">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultBg = '/assets/backgrounds/foggy-forest.png';
+            let bg = localStorage.getItem('bg');
+            if (!bg) {
+                bg = defaultBg;
+                localStorage.setItem('bg', bg);
+            }
+            document.body.style.backgroundImage = `url('${bg}')`;
+
+            const proxyTypeSelect = document.getElementById('type');
+            if (!localStorage.getItem('proxy')) localStorage.setItem('proxy', 'ultraviolet');
+            proxyTypeSelect.value = localStorage.getItem('proxy');
+            proxyTypeSelect.addEventListener('change', (event) => localStorage.setItem('proxy', event.target.value));
+
+            const searchEngineSelect = document.getElementById('search-engine');
+            if (!localStorage.getItem('search')) localStorage.setItem('search', 'https://www.google.com/search?q=');
+            searchEngineSelect.value = localStorage.getItem('search');
+            searchEngineSelect.addEventListener('change', (event) => localStorage.setItem('search', event.target.value));
+
+            const transportTypeSelect = document.getElementById('transport-type');
+            if (!localStorage.getItem('transport')) localStorage.setItem('transport', 'libcurl');
+            transportTypeSelect.value = localStorage.getItem('transport');
+            transportTypeSelect.addEventListener('change', (event) => localStorage.setItem('transport', event.target.value));
+
+            const wispServerTypeSelect = document.getElementById('wisp-server-type');
+            const customWispServerContainer = document.getElementById('custom-wisp-server-container');
+            const customWispServerInput = document.getElementById('custom-wisp-server-input');
+            const defaultWispUrl = `wss://${window.location.host}/wisp/`;
+
+            if (!localStorage.getItem('wisp')) localStorage.setItem('wisp', defaultWispUrl);
+
+            const currentWispUrl = localStorage.getItem('wisp');
+            if (currentWispUrl === defaultWispUrl) {
+                wispServerTypeSelect.value = 'default';
+                customWispServerInput.value = '';
+            } else {
+                wispServerTypeSelect.value = 'custom';
+                customWispServerInput.value = currentWispUrl;
+            }
+
+            const updateWispServerVisibility = () => {
+                if (wispServerTypeSelect.value === 'custom') {
+                    customWispServerContainer.style.display = 'flex';
+                } else {
+                    customWispServerContainer.style.display = 'none';
+                }
+            };
             updateWispServerVisibility();
-        });
 
-        customWispServerInput.addEventListener('input', (event) => {
-            if (wispServerTypeSelect.value === 'custom') {
-                localStorage.setItem('wisp', event.target.value);
-            }
-        });
+            wispServerTypeSelect.addEventListener('change', (event) => {
+                const selectedType = event.target.value;
+                if (selectedType === 'default') localStorage.setItem('wisp', defaultWispUrl);
+                else localStorage.setItem('wisp', customWispServerInput.value);
+                updateWispServerVisibility();
+            });
 
-        const savedFont = localStorage.getItem('font');
-        if (savedFont) {
-            document.body.style.fontFamily = savedFont;
-        }
-    });
-</script>
+            customWispServerInput.addEventListener('input', (event) => {
+                if (wispServerTypeSelect.value === 'custom') localStorage.setItem('wisp', event.target.value);
+            });
+
+            const savedFont = localStorage.getItem('font');
+            if (savedFont) document.body.style.fontFamily = savedFont;
+        });
+    </script>
+</body>
+</html>
