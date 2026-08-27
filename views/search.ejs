@@ -3,454 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylara</title>
-    
-    <script src="/scram/scramjet.js"></script>
-    <script src="/controller/controller.api.js"></script>
-    <script src="/epoxy/index.js"></script>
     <script src="/baremux/index.js"></script>
+    <script src="/epoxy/index.mjs" type="module"></script>
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
-
-    <link rel="icon" type="image/png" href="/assets/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="/scram/scramjet.js"></script>
+    <script src="/controller/controller.api.js"></script>
+    <title>Xylara</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes rumble { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-2px)} 30%{transform:translateX(2px)} 45%{transform:translateX(-1px)} 60%{transform:translateX(1px)} }
-        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.3)} 50%{box-shadow:0 0 40px rgba(139,92,246,0.5)} }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             margin: 0;
             padding: 0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            position: relative;
+            overflow: hidden;
+            background: #000;
         }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.45);
-            z-index: 0;
-            pointer-events: none;
+        iframe {
+            width: 100vw;
+            height: 100vh;
+            border: none;
         }
-
-        /* TOPBAR */
-        .topbar {
+        .top-hover-trigger {
             position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 50px;
+            z-index: 1000;
+        }
+        .search-container {
+            display: none;
+            position: absolute;
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(15, 15, 22, 0.8);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 20px;
-            padding: 5px 10px;
-            backdrop-filter: blur(20px);
-            animation: fadeIn 0.4s ease;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 15px;
+            color: white;
+            min-width: 300px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            font-family: sans-serif;
+            border: 1px solid #444;
         }
-
-        .topbar a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            transition: all 0.2s;
-            text-decoration: none;
+        .top-hover-trigger:hover .search-container, .search-container:focus-within {
+            display: block;
         }
-
-        .topbar a:hover {
-            background: rgba(139,92,246,0.25);
-        }
-
-        .topbar a.active {
-            background: rgba(139,92,246,0.3);
-        }
-
-        .topbar a:active {
-            animation: rumble 0.3s ease;
-        }
-
-        .topbar svg {
-            width: 16px;
-            height: 16px;
-            stroke: white;
-            fill: none;
-            stroke-width: 1.7;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            animation: fadeIn 0.6s ease;
-        }
-
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: 900;
-            letter-spacing: 6px;
-            color: #fff;
-            margin-bottom: 4px;
-            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
-        }
-
-        .tagline {
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.6);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 28px;
-            font-weight: 500;
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            max-width: 520px;
-            margin: 0 auto;
-            background: rgba(15, 15, 22, 0.8);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 16px;
-            padding: 6px;
-            backdrop-filter: blur(20px);
-            animation: slideUp 0.6s ease;
-            transition: all 0.3s;
-        }
-
-        .search-container:focus-within {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 30px rgba(139,92,246,0.2);
-        }
-
-        .search-input {
-            flex: 1;
-            border: none;
-            padding: 13px 18px;
-            font-size: 0.9rem;
-            outline: none;
+        #url-input {
             background: transparent;
-            color: #fff;
-            font-family: inherit;
-        }
-
-        .search-input::placeholder {
-            color: rgba(255,255,255,0.4);
-        }
-
-        .search-button {
-            background: #8b5cf6;
             border: none;
-            border-radius: 12px;
-            padding: 11px 18px;
-            cursor: pointer;
-            outline: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: white;
-            font-size: 15px;
-            font-weight: 700;
-            transition: all 0.2s;
-            font-family: inherit;
-            animation: pulse 2.5s infinite;
-        }
-
-        .search-button:hover {
-            background: #a78bfa;
-            transform: translateY(-1px);
-        }
-
-        .search-button:active {
-            transform: scale(0.94);
-            animation: rumble 0.3s ease;
-        }
-
-        .app-buttons {
-            display: flex;
-            justify-content: center;
-            margin-top: 22px;
-            gap: 10px;
-            flex-wrap: wrap;
-            animation: slideUp 0.6s ease 0.15s both;
-        }
-
-        .app-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: rgba(15, 15, 22, 0.7);
-            backdrop-filter: blur(15px);
-            cursor: pointer;
+            width: 100%;
+            text-align: center;
             outline: none;
-            border: 1px solid rgba(255,255,255,0.12);
-            color: white;
-            text-decoration: none;
-            transition: all 0.25s;
-            overflow: hidden;
-        }
-
-        .app-button:hover {
-            background: rgba(139,92,246,0.25);
-            border-color: #8b5cf6;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(139,92,246,0.3);
-        }
-
-        .app-button:active {
-            transform: scale(0.88);
-            animation: rumble 0.3s ease;
-        }
-
-        .app-button img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            opacity: 0.85;
-        }
-
-        .app-button:hover img {
-            opacity: 1;
-        }
-
-        #add-app-button {
-            background: rgba(15, 15, 22, 0.7);
-            border: 1.5px dashed rgba(255,255,255,0.2);
-        }
-
-        #add-app-button:hover {
-            border-color: #8b5cf6;
-            background: rgba(139,92,246,0.15);
-        }
-
-        .venusFooter {
-            position: fixed;
-            bottom: 10px;
-            right: 20px;
-            color: rgba(255,255,255,0.5);
-            font-size: 10px;
-            text-decoration: none;
-            z-index: 10;
-        }
-
-        .reset-button {
-            position: fixed;
-            bottom: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 15, 22, 0.7);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            color: rgba(255,255,255,0.5);
-            padding: 8px 16px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: all 0.2s;
-            z-index: 10;
-            font-family: inherit;
-        }
-
-        .reset-button:hover {
-            background: rgba(139,92,246,0.3);
-            color: #fff;
-            border-color: #8b5cf6;
-        }
-
-        @media (max-width: 600px) {
-            .logo-text { font-size: 1.8rem; }
-            .search-container { max-width: 90%; }
-            .app-button { width: 42px; height: 42px; border-radius: 12px; }
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-
-    <!-- TOPBAR -->
-    <div class="topbar">
-        <a href="/" class="active" title="Home">
-            <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
-        </a>
-        <a href="/settings" title="Settings">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-        </a>
-    </div>
-
-    <div class="container">
-        <div class="logo-text">XYLARA</div>
-        <div class="tagline">Browse Freely</div>
+    <div class="top-hover-trigger">
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Search or enter a URL...">
-            <button class="search-button">Go</button>
-        </div>
-        <div class="app-buttons">
-            <a href="#" class="app-button" data-url="https://discord.com">
-                <img src="/assets/svg/discord.svg" alt="Discord">
-            </a>
-            <a href="#" class="app-button" data-url="https://play.geforcenow.com">
-                <img src="/assets/svg/geforcenow.svg" alt="GeForce Now">
-            </a>
-            <a href="#" class="app-button" data-url="https://youtube.com">
-                <img src="/assets/svg/youtube.svg" alt="YouTube">
-            </a>
-            <a href="#" class="app-button" data-url="https://spotify.com">
-                <img src="/assets/svg/spotify.svg" alt="Spotify">
-            </a>
-            <a href="#" class="app-button" data-url="https://x.com">
-                <img src="/assets/svg/x.svg" alt="X">
-            </a>
-            <a href="#" class="app-button" id="add-app-button">
-                <img src="/assets/svg/plus.svg" alt="Add App">
-            </a>
-        </div>
-        <div id="add-app-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; backdrop-filter: blur(8px); color: white;">
-            <div style="padding: 24px; border-radius: 16px; text-align: center; background: rgba(15, 15, 22, 0.95);">
-                <h3 style="margin-bottom: 14px; font-weight: 700;">Add New App</h3>
-                <label style="font-size: 0.7rem; display: block; margin-bottom: 4px;">App Name</label>
-                <input type="text" id="app-name" placeholder="Netflix" style="border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); color: white; width: 220px;"><br>
-                <label style="font-size: 0.7rem; display: block; margin: 8px 0 4px;">App URL</label>
-                <input type="text" id="app-url" placeholder="netflix.com" style="border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 14px; background: rgba(255,255,255,0.05); color: white; width: 220px;"><br><br>
-                <button id="add-app-submit" style="background: #8b5cf6; border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; color: white; font-weight: 600;">Add</button>
-                <button id="add-app-cancel" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 9px 16px; cursor: pointer; color: rgba(255,255,255,0.6); margin-left: 6px;">Cancel</button>
-            </div>
+            <input type="text" id="url-input" placeholder="Enter URL or Search...">
         </div>
     </div>
-    <button class="reset-button" onclick="resetSiteData()">Reset Site Data</button>
-    <a href="#" class="venusFooter">Venus integration</a>
-
+    <iframe id="Frame" src=""></iframe>
     <script>
-        function saveAndNavigate(url) {
-            try {
-                const validUrl = new URL(url).toString();
-                localStorage.setItem("url", validUrl);
-                localStorage.setItem("proxy", "ultraviolet");
-                window.location.href = "/search";
-            } catch(e) {
-                console.error('Invalid URL:', url);
-            }
-        }
+        const frameEl = document.getElementById("Frame");
+        const input = document.getElementById("url-input");
 
-        function handleSearch(query) {
-            query = query.trim();
-            if (!query) return;
-            
-            let url;
-            if (/^https?:\/\//i.test(query)) {
-                url = query;
-            } else if (query.includes('.') && !query.includes(' ')) {
-                url = 'https://' + query;
-            } else {
+        let scramjetFrame = null;
+
+        async function handleNavigation(query) {
+            let url = query.trim();
+            if (!url) return;
+
+            if (!url.includes('.') || url.includes(' ')) {
                 url = (localStorage.getItem('search') || 'https://www.google.com/search?q=') + encodeURIComponent(query);
-            }
-            
-            saveAndNavigate(url);
-        }
-
-        function resetSiteData() {
-            if (confirm("Reset all settings, custom apps, and site data?")) {
-                localStorage.clear();
-                window.location.reload();
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const defaultBg = '/assets/backgrounds/foggy-forest.png';
-            let bg = localStorage.getItem('bg') || defaultBg;
-            document.body.style.backgroundImage = `url('${bg}')`;
-
-            const searchInput = document.querySelector('.search-input');
-            const searchButton = document.querySelector('.search-button');
-            const appButtonsDiv = document.querySelector('.app-buttons');
-            const addAppButton = document.getElementById('add-app-button');
-
-            // Search
-            searchButton.addEventListener('click', () => handleSearch(searchInput.value));
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleSearch(searchInput.value);
-            });
-
-            // App shortcuts
-            document.querySelectorAll('.app-button[data-url]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    saveAndNavigate(btn.dataset.url);
-                });
-            });
-
-            // Custom apps
-            function createAppButton(appName, appUrl) {
-                const appButton = document.createElement('a');
-                appButton.href = '#';
-                appButton.classList.add('app-button');
-                appButton.dataset.url = appUrl;
-                try {
-                    const domain = new URL(appUrl).hostname;
-                    appButton.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" alt="${appName}">`;
-                } catch(e) {
-                    appButton.textContent = appName.substring(0, 2).toUpperCase();
-                }
-                appButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    saveAndNavigate(appUrl);
-                });
-                appButton.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    const apps = JSON.parse(localStorage.getItem('apps') || '[]');
-                    const filtered = apps.filter(a => a.url !== appUrl);
-                    localStorage.setItem('apps', JSON.stringify(filtered));
-                    appButton.remove();
-                });
-                return appButton;
-            }
-
-            let apps = JSON.parse(localStorage.getItem('apps') || '[]');
-            apps.forEach(app => {
-                appButtonsDiv.insertBefore(createAppButton(app.name, app.url), addAppButton);
-            });
-
-            // Add app modal
-            const addAppModal = document.getElementById('add-app-modal');
-            const addAppSubmit = document.getElementById('add-app-submit');
-            const addAppCancel = document.getElementById('add-app-cancel');
-            const appNameInput = document.getElementById('app-name');
-            const appUrlInput = document.getElementById('app-url');
-
-            addAppButton.addEventListener('click', () => addAppModal.style.display = 'flex');
-            addAppCancel.addEventListener('click', () => addAppModal.style.display = 'none');
-            addAppSubmit.addEventListener('click', () => {
-                const name = appNameInput.value.trim();
-                let url = appUrlInput.value.trim();
-                if (!name || !url) return;
+            } else {
                 if (!url.startsWith('http')) url = 'https://' + url;
-                apps.push({ name, url });
-                localStorage.setItem('apps', JSON.stringify(apps));
-                appButtonsDiv.insertBefore(createAppButton(name, url), addAppButton);
-                addAppModal.style.display = 'none';
-                appNameInput.value = '';
-                appUrlInput.value = '';
-            });
+            }
+
+            const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+
+            if (proxyType === 'ultraviolet') {
+                const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
+                localStorage.setItem("url", encoded);
+                frameEl.src = encoded;
+            } else {
+                if (scramjetFrame) {
+                    localStorage.setItem("url", url);
+                    scramjetFrame.go(url);
+                } else {
+                    console.error("Scramjet frame not initialized yet.");
+                }
+            }
+            input.value = url;
+            input.blur();
+        }
+
+        async function init() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    await navigator.serviceWorker.register("/sw.js");
+                    await navigator.serviceWorker.ready;
+                } catch (err) {
+                    console.error("SW Registration error:", err);
+                }
+            }
+
+            try {
+                const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+                const wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+                const transport = localStorage.getItem("transport") || "libcurl";
+                const transportPath = transport === "epoxy" ? "/epoxy/index.mjs" : "/libcurl/index.mjs";
+                
+                if (await connection.getTransport() !== transportPath) {
+                    await connection.setTransport(transportPath, [{ wisp: wispUrl }]);
+                }
+            } catch (err) {
+                console.error("BareMux init error:", err);
+            }
+
+            try {
+                await navigator.serviceWorker.ready;
+                const serviceworker = navigator.serviceWorker.controller ?? (await navigator.serviceWorker.ready).active;
+                let wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+
+                let EpoxyTransport;
+                if (self.EpoxyTransport) {
+                    EpoxyTransport = self.EpoxyTransport.EpoxyTransport || self.EpoxyTransport.default || self.EpoxyTransport;
+                } else {
+                    const epoxyModule = await import('/epoxy/index.mjs');
+                    EpoxyTransport = epoxyModule.EpoxyTransport || epoxyModule.default;
+                }
+
+                const transport = new EpoxyTransport({ wisp: wispUrl });
+                await transport.init();
+
+                const { Controller } = $scramjetController;
+                const { defaultConfig } = $scramjet;
+
+                const scramjet = new Controller({
+                    serviceworker,
+                    transport,
+                    scramjetConfig: defaultConfig
+                });
+
+                await scramjet.wait();
+                window.sj = scramjet;
+
+                scramjetFrame = scramjet.createFrame(frameEl);
+
+                const savedUrl = localStorage.getItem("url");
+                const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+
+                if (savedUrl) {
+                    if (proxyType === 'scramjet' || !savedUrl.startsWith(__uv$config.prefix)) {
+                        const target = savedUrl.startsWith("http") ? savedUrl : "https://example.com";
+                        scramjetFrame.go(target);
+                        input.value = target;
+                    } else {
+                        frameEl.src = savedUrl;
+                        input.value = savedUrl;
+                    }
+                }
+            } catch (error) {
+                console.error("Scramjet init error in search page:", error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            init();
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") handleNavigation(input.value);
         });
     </script>
 </body>
