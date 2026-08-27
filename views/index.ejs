@@ -8,13 +8,23 @@
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
     <script src="/epoxy/index.js"></script>
-
     <script src="/baremux/index.js"></script>
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
 
     <link rel="icon" type="image/png" href="/assets/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes rumble { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-2px)} 30%{transform:translateX(2px)} 45%{transform:translateX(-1px)} 60%{transform:translateX(1px)} }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.3)} 50%{box-shadow:0 0 40px rgba(139,92,246,0.5)} }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             margin: 0;
             padding: 0;
@@ -26,102 +36,255 @@
             justify-content: center;
             align-items: center;
             color: white;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            position: relative;
         }
-        h1 {
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+
+        /* Dark overlay for readability */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 0;
+            pointer-events: none;
         }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #fff;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        }
+
+        .tagline {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
         .search-container {
             display: flex;
             align-items: center;
-            margin-top: 20px;
+            max-width: 520px;
+            margin: 0 auto;
+            background: rgba(15, 15, 22, 0.8);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 6px;
+            backdrop-filter: blur(20px);
+            animation: slideUp 0.6s ease;
+            transition: all 0.3s;
         }
+
+        .search-container:focus-within {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 30px rgba(139,92,246,0.2);
+        }
+
         .search-input {
+            flex: 1;
             border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            width: 400px;
-            font-size: 16px;
+            padding: 13px 18px;
+            font-size: 0.9rem;
             outline: none;
-            background-color: rgba(255, 255, 255, 0.8);
-            color: #333;
+            background: transparent;
+            color: #fff;
+            font-family: inherit;
         }
+
         .search-input::placeholder {
-            color: #666;
+            color: rgba(255,255,255,0.4);
         }
+
         .search-button {
-            background-color: rgba(0, 0, 0, 0.7);
+            background: #8b5cf6;
             border: none;
-            border-radius: 25px;
-            padding: 10px 15px;
-            margin-left: 4px;
+            border-radius: 12px;
+            padding: 11px 18px;
             cursor: pointer;
             outline: none;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
+            transition: all 0.2s;
+            font-family: inherit;
+            animation: pulse 2.5s infinite;
         }
+
         .search-button:hover {
-            background-color: rgba(0, 0, 0, 0.9);
+            background: #a78bfa;
+            transform: translateY(-1px);
         }
-        .venusFooter {
-            position: fixed;
-            bottom: 10px;
-            right: 20px;
-            color: white;
-            font-size: 10px;
-            text-decoration: none;
-            opacity: 0.7;
+
+        .search-button:active {
+            transform: scale(0.94);
+            animation: rumble 0.3s ease;
         }
-        .reset-button {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            border: none;
-            border-radius: 25px;
-            color: white;
-            padding: 10px 20px;
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-            transition: background-color 0.2s;
-            z-index: 1000;
-        }
-        .reset-button:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-        }
+
         .app-buttons {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 22px;
+            gap: 10px;
+            flex-wrap: wrap;
+            animation: slideUp 0.6s ease 0.15s both;
         }
+
         .app-button {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.7);
-            margin: 0 10px;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(15, 15, 22, 0.7);
+            backdrop-filter: blur(15px);
             cursor: pointer;
             outline: none;
-            border: none;
+            border: 1px solid rgba(255,255,255,0.12);
             color: white;
             text-decoration: none;
+            transition: all 0.25s;
         }
+
         .app-button:hover {
-            background-color: rgba(0, 0, 0, 0.9);
+            background: rgba(139,92,246,0.25);
+            border-color: #8b5cf6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139,92,246,0.3);
         }
+
+        .app-button:active {
+            transform: scale(0.88);
+            animation: rumble 0.3s ease;
+        }
+
         .app-button img {
-            max-width: 60%;
-            max-height: 60%;
+            max-width: 55%;
+            max-height: 55%;
+            opacity: 0.8;
         }
+
+        .app-button:hover img {
+            opacity: 1;
+        }
+
         #add-app-button {
-            background-color: rgba(0, 0, 0, 0.7);
+            background: rgba(15, 15, 22, 0.7);
+            border: 1.5px dashed rgba(255,255,255,0.2);
+        }
+
+        #add-app-button:hover {
+            border-color: #8b5cf6;
+            background: rgba(139,92,246,0.15);
+        }
+
+        .venusFooter {
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 10px;
+            text-decoration: none;
+            z-index: 10;
+        }
+
+        .reset-button {
+            position: fixed;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 15, 22, 0.7);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 10;
+            font-family: inherit;
+        }
+
+        .reset-button:hover {
+            background: rgba(139,92,246,0.3);
+            color: #fff;
+            border-color: #8b5cf6;
+        }
+
+        #add-app-modal > div {
+            background: rgba(15, 15, 22, 0.95);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+        }
+
+        #add-app-modal input {
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 10px 16px;
+            width: 220px;
+            outline: none;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        #add-app-modal input:focus {
+            border-color: #8b5cf6;
+        }
+
+        #add-app-submit, #add-app-cancel {
+            border-radius: 10px;
+            padding: 9px 16px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        #add-app-submit {
+            background: #8b5cf6;
+            border: none;
+            color: white;
+        }
+
+        #add-app-submit:hover {
+            background: #a78bfa;
+        }
+
+        #add-app-cancel {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.6);
+        }
+
+        #add-app-cancel:hover {
+            border-color: rgba(255,255,255,0.3);
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .logo-text { font-size: 1.8rem; }
+            .search-container { max-width: 90%; }
+            .app-button { width: 42px; height: 42px; border-radius: 12px; }
         }
     </style>
     <script>
@@ -251,11 +414,19 @@
                 const appButton = document.createElement('a');
                 appButton.href = '#';
                 appButton.classList.add('app-button');
-                appButton.textContent = appName;
+                
+                // Try to get favicon
+                try {
+                    const domain = new URL(appUrl).hostname;
+                    appButton.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" alt="${appName}">`;
+                } catch(e) {
+                    appButton.textContent = appName.substring(0, 2).toUpperCase();
+                }
+                
                 appButton.addEventListener('click', (e) => { e.preventDefault(); encodeURL(appUrl); });
                 appButton.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
-                    const index = apps.findIndex(a => a.name === appButton.textContent);
+                    const index = apps.findIndex(a => a.name === appName);
                     if (index > -1) {
                         apps.splice(index, 1);
                         localStorage.setItem('apps', JSON.stringify(apps));
@@ -311,39 +482,41 @@
 </head>
 <body>
     <div class="container">
+        <div class="logo-text">XYLARA</div>
+        <div class="tagline">Browse Freely</div>
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Search the web freely...">
-            <button class="search-button">➜</button>
+            <input type="text" class="search-input" placeholder="Search or enter a URL...">
+            <button class="search-button">Go</button>
         </div>
         <div class="app-buttons">
             <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://discord.com'; document.querySelector('.search-button').click();">
-                <img src="/assets/svg/discord.svg" alt="Discord">
+                <img src="https://www.google.com/s2/favicons?domain=discord.com&sz=64" alt="Discord">
             </a>
             <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://play.geforcenow.com'; document.querySelector('.search-button').click();">
-                <img src="/assets/svg/geforcenow.svg" alt="Geforcenow">
+                <img src="https://www.google.com/s2/favicons?domain=play.geforcenow.com&sz=64" alt="GeForce Now">
             </a>
             <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://youtube.com'; document.querySelector('.search-button').click();">
-                <img src="/assets/svg/youtube.svg" alt="Youtube">
+                <img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt="YouTube">
             </a>
             <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://spotify.com'; document.querySelector('.search-button').click();">
-                <img src="/assets/svg/spotify.svg" alt="Spotify">
+                <img src="https://www.google.com/s2/favicons?domain=spotify.com&sz=64" alt="Spotify">
             </a>
             <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://x.com'; document.querySelector('.search-button').click();">
-                <img src="/assets/svg/x.svg" alt="Twitter/X">
+                <img src="https://www.google.com/s2/favicons?domain=x.com&sz=64" alt="X">
             </a>
             <a href="#" class="app-button" id="add-app-button">
-                <img src="/assets/svg/plus.svg" alt="Add App">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </a>
         </div>
-        <div id="add-app-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; backdrop-filter: blur(5px); color: white;">
-            <div style="background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 10px; text-align: center;">
-                <h2 style="margin-bottom: 4px;">Add New App</h2>
-                <label>App Name:</label><br>
-                <input type="text" id="app-name" style="border: none; border-radius: 25px; padding: 10px 20px; width: 200px; outline: none; background-color: rgba(255, 255, 255, 0.1); color: white;"><br><br>
-                <label>App URL:</label><br>
-                <input type="text" id="app-url" style="border: none; border-radius: 25px; padding: 10px 20px; width: 200px; outline: none; background-color: rgba(255, 255, 255, 0.1); color: white;"><br><br>
-                <button id="add-app-submit" style="background-color: rgba(0, 0, 0, 0.7); border: none; border-radius: 25px; padding: 10px 15px; cursor: pointer; color: white;">Add</button>
-                <button id="add-app-cancel" style="background-color: rgba(0, 0, 0, 0.7); border: none; border-radius: 25px; padding: 10px 15px; cursor: pointer; color: white;">Cancel</button>
+        <div id="add-app-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; backdrop-filter: blur(8px); color: white;">
+            <div style="padding: 24px; border-radius: 16px; text-align: center;">
+                <h3 style="margin-bottom: 14px; font-weight: 700;">Add New App</h3>
+                <label style="font-size: 0.7rem; display: block; margin-bottom: 4px;">App Name</label>
+                <input type="text" id="app-name" placeholder="Netflix"><br>
+                <label style="font-size: 0.7rem; display: block; margin: 8px 0 4px;">App URL</label>
+                <input type="text" id="app-url" placeholder="netflix.com"><br><br>
+                <button id="add-app-submit">Add</button>
+                <button id="add-app-cancel" style="margin-left: 6px;">Cancel</button>
             </div>
         </div>
     </div>
