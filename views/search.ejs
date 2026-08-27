@@ -3,73 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <script src="/baremux/index.js"></script>
     <script src="/epoxy/index.mjs" type="module"></script>
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
+
     <title>Xylara</title>
+
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #000;
+        :root {
+            --purple: #8b5cf6;
+            --light-purple: #c4b5fd;
+            --panel: rgba(10, 10, 22, 0.78);
+            --border: rgba(255, 255, 255, 0.15);
+            --text-muted: rgba(255, 255, 255, 0.55);
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatGlow {
+            0%, 100% {
+                transform: translate(-50%, 0) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -18px) scale(1.08);
+            }
+        }
+
+        @keyframes rumble {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            50% { transform: translateX(2px); }
+            75% { transform: translateX(-1px); }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #080811;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            background:
+                linear-gradient(135deg, rgba(5, 5, 14, 0.72), rgba(21, 12, 43, 0.5)),
+                rgba(0, 0, 0, 0.16);
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 3%;
+            left: 50%;
+            width: 420px;
+            height: 420px;
+            z-index: 6;
+            pointer-events: none;
+            background: radial-gradient(
+                circle,
+                rgba(139, 92, 246, 0.22),
+                rgba(91, 33, 182, 0.08) 40%,
+                transparent 72%
+            );
+            filter: blur(20px);
+            animation: floatGlow 10s ease-in-out infinite;
+        }
+
         iframe {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
             width: 100vw;
             height: 100vh;
             border: none;
+            background: #000;
         }
-        .top-hover-trigger {
+
+        .toolbar {
             position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 50px;
-            z-index: 1000;
+            top: 16px;
+            left: 18px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--panel);
+            box-shadow:
+                0 16px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            animation: fadeIn 0.5s ease;
+            transition: all 0.25s ease;
         }
-        .search-container {
-            display: none;
+
+        .toolbar.hidden-search {
+            padding-right: 7px;
+        }
+
+        .toolbar::before {
+            content: "";
             position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px 20px;
-            border-radius: 15px;
-            color: white;
-            min-width: 300px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
-            font-family: sans-serif;
-            border: 1px solid #444;
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+            background: linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0.08),
+                transparent 45%,
+                rgba(139, 92, 246, 0.13)
+            );
         }
-        .top-hover-trigger:hover .search-container, .search-container:focus-within {
-            display: block;
-        }
-        #url-input {
-            background: transparent;
-            border: none;
-            color: white;
-            width: 100%;
-            text-align: center;
+
+        .control-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 11px;
             outline: none;
-            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: all 0.22s ease;
+        }
+
+        .control-button:hover {
+            color: #fff;
+            border-color: var(--light-purple);
+            background: rgba(139, 92, 246, 0.28);
+            box-shadow: 0 0 18px rgba(139, 92, 246, 0.22);
+            transform: translateY(-2px);
+        }
+
+        .control-button:active {
+            animation: rumble 0.25s ease;
+            transform: scale(0.93);
+        }
+
+        .control-button svg {
+            width: 17px;
+            height: 17px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            width: min(42vw, 390px);
+            height: 36px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 11px;
+            background: rgba(0, 0, 0, 0.24);
+            transition: all 0.25s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--light-purple);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        #url-input {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            padding: 0 14px;
+            border: none;
+            outline: none;
+            color: #fff;
+            background: transparent;
+            font: inherit;
+            font-size: 0.8rem;
+        }
+
+        #url-input::placeholder {
+            color: rgba(255, 255, 255, 0.42);
+        }
+
+        .go-button {
+            height: 100%;
+            padding: 0 15px;
+            border: none;
+            color: #fff;
+            background: linear-gradient(135deg, #9b6cff, #7040dc);
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.76rem;
+            font-weight: 800;
+            transition: all 0.2s ease;
+        }
+
+        .go-button:hover {
+            background: linear-gradient(135deg, #b39aff, #8555ef);
+        }
+
+        .toolbar.search-hidden .search-box,
+        .toolbar.search-hidden .go-button {
+            display: none;
+        }
+
+        .toolbar.search-hidden {
+            gap: 6px;
+        }
+
+        .status {
+            position: fixed;
+            right: 18px;
+            bottom: 15px;
+            z-index: 20;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            color: var(--text-muted);
+            background: rgba(10, 10, 20, 0.58);
+            font-size: 10px;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        @media (max-width: 700px) {
+            .toolbar {
+                top: 12px;
+                left: 12px;
+                right: 12px;
+                width: auto;
+            }
+
+            .search-box {
+                width: auto;
+                flex: 1;
+            }
+
+            .control-button {
+                width: 33px;
+                height: 33px;
+            }
+
+            .go-button {
+                padding: 0 11px;
+            }
+
+            .status {
+                right: 10px;
+                bottom: 10px;
+            }
+        }
+
+        @media (max-width: 470px) {
+            .toolbar {
+                gap: 4px;
+                padding: 5px;
+            }
+
+            .control-button {
+                width: 30px;
+                height: 30px;
+                border-radius: 9px;
+            }
+
+            .control-button svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            #url-input {
+                padding: 0 9px;
+                font-size: 0.73rem;
+            }
+
+            .go-button {
+                padding: 0 9px;
+                font-size: 0.7rem;
+            }
+
+            .status {
+                display: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="top-hover-trigger">
-        <div class="search-container">
-            <input type="text" id="url-input" placeholder="Enter URL or Search...">
+    <div class="toolbar" id="toolbar">
+        <button class="control-button" id="back-button" title="Go back" aria-label="Go back">
+            <svg viewBox="0 0 24 24">
+                <path d="m15 18-6-6 6-6"></path>
+            </svg>
+        </button>
+
+        <button class="control-button" id="forward-button" title="Go forward" aria-label="Go forward">
+            <svg viewBox="0 0 24 24">
+                <path d="m9 18 6-6-6-6"></path>
+            </svg>
+        </button>
+
+        <button class="control-button" id="refresh-button" title="Refresh" aria-label="Refresh">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4"></path>
+                <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"></path>
+            </svg>
+        </button>
+
+        <button class="control-button" id="home-button" title="Home" aria-label="Home">
+            <svg viewBox="0 0 24 24">
+                <path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"></path>
+                <path d="M9 20v-6h6v6"></path>
+            </svg>
+        </button>
+
+        <div class="search-box">
+            <input type="text" id="url-input" placeholder="Search or enter a URL..." autocomplete="off">
+            <button class="go-button" id="go-button">Go</button>
         </div>
+
+        <button class="control-button" id="toggle-search" title="Hide search bar" aria-label="Hide search bar">
+            <svg id="toggle-icon" viewBox="0 0 24 24">
+                <path d="M4 12h16"></path>
+                <path d="m14 6 6 6-6 6"></path>
+            </svg>
+        </button>
     </div>
-    <iframe id="Frame" src=""></iframe>
+
+    <div class="status">XYLARA</div>
+
+    <iframe id="Frame" src="" title="Xylara browser"></iframe>
+
     <script>
         const frameEl = document.getElementById("Frame");
         const input = document.getElementById("url-input");
+        const toolbar = document.getElementById("toolbar");
+        const toggleSearchButton = document.getElementById("toggle-search");
+        const toggleIcon = document.getElementById("toggle-icon");
 
         let scramjetFrame = null;
 
@@ -77,32 +385,54 @@
             let url = query.trim();
             if (!url) return;
 
-            if (!url.includes('.') || url.includes(' ')) {
-                url = (localStorage.getItem('search') || 'https://www.google.com/search?q=') + encodeURIComponent(query);
-            } else {
-                if (!url.startsWith('http')) url = 'https://' + url;
+            if (!url.includes(".") || url.includes(" ")) {
+                url = (localStorage.getItem("search") || "https://www.google.com/search?q=")
+                    + encodeURIComponent(query);
+            } else if (!url.startsWith("http")) {
+                url = "https://" + url;
             }
 
-            const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+            const proxyType = localStorage.getItem("proxy") || "ultraviolet";
 
-            if (proxyType === 'ultraviolet') {
+            if (proxyType === "ultraviolet") {
                 const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
                 localStorage.setItem("url", encoded);
                 frameEl.src = encoded;
-            } else {
-                if (scramjetFrame) {
-                    localStorage.setItem("url", url);
-                    scramjetFrame.go(url);
-                } else {
-                    console.error("Scramjet frame not initialized yet.");
-                }
+            } else if (scramjetFrame) {
+                localStorage.setItem("url", url);
+                scramjetFrame.go(url);
             }
+
             input.value = url;
             input.blur();
         }
 
+        function frameHistory(action) {
+            try {
+                if (scramjetFrame && scramjetFrame.contentWindow) {
+                    scramjetFrame.contentWindow.history[action]();
+                } else if (frameEl.contentWindow) {
+                    frameEl.contentWindow.history[action]();
+                }
+            } catch (error) {
+                console.warn("Frame history is unavailable:", error);
+            }
+        }
+
+        function refreshFrame() {
+            try {
+                if (scramjetFrame && typeof scramjetFrame.reload === "function") {
+                    scramjetFrame.reload();
+                } else {
+                    frameEl.contentWindow.location.reload();
+                }
+            } catch (error) {
+                frameEl.src = frameEl.src;
+            }
+        }
+
         async function init() {
-            if ('serviceWorker' in navigator) {
+            if ("serviceWorker" in navigator) {
                 try {
                     await navigator.serviceWorker.register("/sw.js");
                     await navigator.serviceWorker.ready;
@@ -113,10 +443,13 @@
 
             try {
                 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-                const wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+                const wispUrl = localStorage.getItem("wisp") ||
+                    ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
                 const transport = localStorage.getItem("transport") || "libcurl";
-                const transportPath = transport === "epoxy" ? "/epoxy/index.mjs" : "/libcurl/index.mjs";
-                
+                const transportPath = transport === "epoxy"
+                    ? "/epoxy/index.mjs"
+                    : "/libcurl/index.mjs";
+
                 if (await connection.getTransport() !== transportPath) {
                     await connection.setTransport(transportPath, [{ wisp: wispUrl }]);
                 }
@@ -126,14 +459,21 @@
 
             try {
                 await navigator.serviceWorker.ready;
-                const serviceworker = navigator.serviceWorker.controller ?? (await navigator.serviceWorker.ready).active;
-                let wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+
+                const serviceworker = navigator.serviceWorker.controller ||
+                    (await navigator.serviceWorker.ready).active;
+
+                const wispUrl = localStorage.getItem("wisp") ||
+                    ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
 
                 let EpoxyTransport;
+
                 if (self.EpoxyTransport) {
-                    EpoxyTransport = self.EpoxyTransport.EpoxyTransport || self.EpoxyTransport.default || self.EpoxyTransport;
+                    EpoxyTransport = self.EpoxyTransport.EpoxyTransport ||
+                        self.EpoxyTransport.default ||
+                        self.EpoxyTransport;
                 } else {
-                    const epoxyModule = await import('/epoxy/index.mjs');
+                    const epoxyModule = await import("/epoxy/index.mjs");
                     EpoxyTransport = epoxyModule.EpoxyTransport || epoxyModule.default;
                 }
 
@@ -151,15 +491,17 @@
 
                 await scramjet.wait();
                 window.sj = scramjet;
-
                 scramjetFrame = scramjet.createFrame(frameEl);
 
                 const savedUrl = localStorage.getItem("url");
-                const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+                const proxyType = localStorage.getItem("proxy") || "ultraviolet";
 
                 if (savedUrl) {
-                    if (proxyType === 'scramjet' || !savedUrl.startsWith(__uv$config.prefix)) {
-                        const target = savedUrl.startsWith("http") ? savedUrl : "https://example.com";
+                    if (proxyType === "scramjet" || !savedUrl.startsWith(__uv$config.prefix)) {
+                        const target = savedUrl.startsWith("http")
+                            ? savedUrl
+                            : "https://example.com";
+
                         scramjetFrame.go(target);
                         input.value = target;
                     } else {
@@ -172,12 +514,58 @@
             }
         }
 
+        function updateToggleButton() {
+            const hidden = toolbar.classList.contains("search-hidden");
+
+            toggleSearchButton.title = hidden ? "Show search bar" : "Hide search bar";
+            toggleSearchButton.setAttribute(
+                "aria-label",
+                hidden ? "Show search bar" : "Hide search bar"
+            );
+
+            toggleIcon.innerHTML = hidden
+                ? '<path d="M4 12h16"></path><path d="m10 6-6 6 6 6"></path>'
+                : '<path d="M4 12h16"></path><path d="m14 6 6 6-6 6"></path>';
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             init();
-        });
 
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") handleNavigation(input.value);
+            document.getElementById("back-button").addEventListener("click", () => {
+                frameHistory("back");
+            });
+
+            document.getElementById("forward-button").addEventListener("click", () => {
+                frameHistory("forward");
+            });
+
+            document.getElementById("refresh-button").addEventListener("click", refreshFrame);
+
+            document.getElementById("home-button").addEventListener("click", () => {
+                localStorage.removeItem("url");
+                window.location.href = "/";
+            });
+
+            document.getElementById("go-button").addEventListener("click", () => {
+                handleNavigation(input.value);
+            });
+
+            input.addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    handleNavigation(input.value);
+                }
+            });
+
+            toggleSearchButton.addEventListener("click", () => {
+                toolbar.classList.toggle("search-hidden");
+                updateToggleButton();
+
+                if (!toolbar.classList.contains("search-hidden")) {
+                    input.focus();
+                }
+            });
+
+            updateToggleButton();
         });
     </script>
 </body>
