@@ -3,126 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <script src="/baremux/index.js"></script>
     <script src="/epoxy/index.mjs" type="module"></script>
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
-
     <title>Xylara Browser</title>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-        :root {
-            --panel: rgba(17, 17, 28, .94);
-            --panel-light: rgba(255, 255, 255, .08);
-            --border: rgba(255, 255, 255, .14);
-            --purple: #8b5cf6;
-            --purple-light: #b49aff;
-            --text-muted: rgba(255, 255, 255, .58);
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes tabIn { from { opacity: 0; transform: translateY(4px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes rumble { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-2px)} 30%{transform:translateX(2px)} 45%{transform:translateX(-1px)} 60%{transform:translateX(1px)} }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        html,
         body {
-            width: 100%;
-            height: 100%;
             margin: 0;
+            padding: 0;
             overflow: hidden;
-            background: #050509;
-            color: white;
-            font-family: Inter, sans-serif;
-        }
-
-        button,
-        input {
-            font: inherit;
-        }
-
-        iframe {
-            position: fixed;
-            inset: 0;
-            z-index: 1;
-            width: 100vw;
+            background: #0a0a0f;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex;
+            flex-direction: column;
             height: 100vh;
-            border: 0;
-            background: white;
         }
 
-        .browser-shell {
-            position: fixed;
-            top: 12px;
-            left: 50%;
-            z-index: 20;
-            width: min(980px, calc(100% - 24px));
-            transform: translateX(-50%);
-            transition: .3s ease;
+        /* ============ TOP BAR ============ */
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: #0d0d14;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
         }
 
-        .browser-shell.hidden {
-            transform: translate(-50%, -150%);
-            opacity: 0;
+        .topbar-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #8a8a92;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .topbar-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        .topbar-btn:active {
+            animation: rumble 0.3s ease;
+            transform: scale(0.9);
+        }
+
+        .topbar-btn:disabled {
+            opacity: 0.3;
             pointer-events: none;
         }
 
-        .browser-bar {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px;
-            border: 1px solid var(--border);
-            border-radius: 17px;
-            background: var(--panel);
-            box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
-            backdrop-filter: blur(24px);
-        }
-
-        .browser-button,
-        .new-tab,
-        .close-tab {
-            display: grid;
-            place-items: center;
-            flex: 0 0 auto;
-            border: 0;
-            color: rgba(255, 255, 255, .72);
-            background: transparent;
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-        .browser-button {
-            width: 37px;
-            height: 37px;
-            border-radius: 11px;
-        }
-
-        .browser-button:hover,
-        .new-tab:hover {
-            color: white;
-            background: rgba(139, 92, 246, .32);
-            transform: translateY(-1px);
-        }
-
-        .browser-button.home {
-            color: white;
-            background: linear-gradient(135deg, #a27aff, #7140dc);
-            box-shadow: 0 5px 18px rgba(139, 92, 246, .35);
-        }
-
-        .browser-button:active,
-        .new-tab:active {
-            transform: scale(.9);
-        }
-
-        svg {
-            width: 18px;
-            height: 18px;
+        .topbar-btn svg {
+            width: 15px;
+            height: 15px;
             fill: none;
             stroke: currentColor;
             stroke-width: 1.8;
@@ -130,574 +83,617 @@
             stroke-linejoin: round;
         }
 
-        .separator {
-            width: 1px;
-            height: 23px;
-            margin: 0 2px;
-            background: rgba(255, 255, 255, .14);
+        .logo-mini {
+            font-weight: 900;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: #8b5cf6;
+            padding: 0 8px;
+            flex-shrink: 0;
         }
 
-        .address-box {
-            display: flex;
-            align-items: center;
+        .address-bar {
             flex: 1;
-            min-width: 120px;
-            height: 37px;
-            padding: 0 11px;
-            border: 1px solid rgba(255, 255, 255, .1);
-            border-radius: 11px;
-            background: rgba(0, 0, 0, .28);
-            transition: .2s ease;
-        }
-
-        .address-box:focus-within {
-            border-color: var(--purple-light);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, .14);
-        }
-
-        .address-icon {
-            width: 15px;
-            height: 15px;
-            margin-right: 9px;
-            color: var(--text-muted);
-        }
-
-        #url-input {
-            width: 100%;
-            min-width: 0;
-            border: 0;
-            outline: 0;
-            color: white;
-            background: transparent;
-            font-size: .8rem;
-        }
-
-        #url-input::placeholder {
-            color: rgba(255, 255, 255, .42);
-        }
-
-        .go-button {
-            display: grid;
-            place-items: center;
-            width: 29px;
-            height: 29px;
-            margin-left: 6px;
-            border: 0;
-            border-radius: 8px;
-            color: white;
-            background: var(--purple);
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-        .go-button:hover {
-            background: var(--purple-light);
-            transform: scale(1.06);
-        }
-
-        .go-button svg {
-            width: 15px;
-            height: 15px;
-        }
-
-        .tabs-panel {
             display: flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 7px;
-            padding: 6px;
-            overflow-x: auto;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: var(--panel);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, .3);
-            scrollbar-width: thin;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 0 14px;
+            height: 32px;
+            transition: all 0.2s;
+            max-width: 600px;
+            margin: 0 auto;
         }
+
+        .address-bar:focus-within {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139,92,246,0.15);
+        }
+
+        .lock-icon {
+            color: #555;
+            font-size: 11px;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .address-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e8e8f0;
+            font-size: 12px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .address-bar input::placeholder {
+            color: #55555c;
+        }
+
+        /* ============ TABS ============ */
+        .tabs-bar {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            padding: 5px 8px 0;
+            background: #0a0a0f;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+            flex-shrink: 0;
+            scrollbar-width: none;
+        }
+
+        .tabs-bar::-webkit-scrollbar { display: none; }
 
         .tab {
             display: flex;
             align-items: center;
-            gap: 7px;
-            min-width: 145px;
-            max-width: 220px;
-            height: 34px;
-            padding: 0 8px;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 8px 8px 0 0;
+            background: transparent;
             border: 1px solid transparent;
-            border-radius: 10px;
-            color: var(--text-muted);
-            background: rgba(255, 255, 255, .055);
+            color: #8a8a92;
             cursor: pointer;
-            transition: .2s ease;
+            font-size: 11px;
+            white-space: nowrap;
+            max-width: 150px;
+            min-width: 70px;
+            transition: all 0.15s;
+            flex-shrink: 0;
+            animation: tabIn 0.2s ease;
         }
 
-        .tab:hover,
+        .tab:hover {
+            background: rgba(255,255,255,0.04);
+            color: #e8e8f0;
+        }
+
         .tab.active {
-            color: white;
-            border-color: rgba(180, 154, 255, .48);
-            background: rgba(139, 92, 246, .25);
-        }
-
-        .tab-favicon {
-            width: 17px;
-            height: 17px;
-            flex: 0 0 auto;
-            border-radius: 4px;
-            object-fit: contain;
+            background: #111118;
+            color: #fff;
+            border-color: rgba(255,255,255,0.08);
+            border-bottom-color: transparent;
+            font-weight: 600;
         }
 
         .tab-title {
-            flex: 1;
             overflow: hidden;
-            font-size: .72rem;
-            text-align: left;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            flex: 1;
+            min-width: 0;
         }
 
-        .close-tab {
-            width: 20px;
-            height: 20px;
-            border-radius: 6px;
-            font-size: 16px;
-            line-height: 1;
-        }
-
-        .close-tab:hover {
-            color: white;
-            background: rgba(255, 255, 255, .16);
-        }
-
-        .new-tab {
-            width: 34px;
-            height: 34px;
-            flex: 0 0 auto;
-            border-radius: 10px;
-            color: white;
-            font-size: 21px;
-            line-height: 1;
-        }
-
-        .toolbar-toggle {
-            position: fixed;
-            top: 14px;
-            right: 16px;
-            z-index: 30;
-            display: grid;
-            place-items: center;
-            width: 40px;
-            height: 40px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: white;
-            background: var(--panel);
-            box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
-            backdrop-filter: blur(20px);
+        .tab-close {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: #555;
             cursor: pointer;
-            transition: .2s ease;
+            font-size: 9px;
+            opacity: 0;
+            transition: all 0.15s;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .toolbar-toggle:hover {
-            background: rgba(139, 92, 246, .35);
+        .tab:hover .tab-close,
+        .tab.active .tab-close {
+            opacity: 1;
+        }
+
+        .tab-close:hover {
+            background: rgba(220,38,38,0.3);
+            color: #ff6b6b;
+        }
+
+        .new-tab-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px dashed rgba(255,255,255,0.12);
+            background: transparent;
+            cursor: pointer;
+            color: #555;
+            font-size: 14px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 3px;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+
+        .new-tab-btn:hover {
+            border-color: #8b5cf6;
+            color: #8b5cf6;
+            background: rgba(139,92,246,0.1);
+        }
+
+        /* ============ BROWSER CONTENT ============ */
+        .browser-content {
+            flex: 1;
+            position: relative;
+            background: #000;
+        }
+
+        .browser-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: #fff;
+        }
+
+        .browser-content iframe.visible {
+            display: block;
+        }
+
+        .new-tab-page {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0f;
+            z-index: 1;
+        }
+
+        .new-tab-page.hidden {
+            display: none;
+        }
+
+        .new-tab-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: #8b5cf6;
+            margin-bottom: 4px;
+        }
+
+        .new-tab-sub {
+            font-size: 0.7rem;
+            color: #555;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+        }
+
+        .new-tab-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 420px;
+            width: 85%;
+        }
+
+        .new-tab-search input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .new-tab-search input:focus {
+            border-color: #8b5cf6;
+        }
+
+        .new-tab-search button {
+            background: #8b5cf6;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .new-tab-search button:hover {
+            background: #a78bfa;
+        }
+
+        .quick-apps {
+            display: flex;
+            gap: 10px;
+            margin-top: 22px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .quick-app {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-app:hover {
+            background: rgba(139,92,246,0.15);
+            border-color: #8b5cf6;
             transform: translateY(-2px);
         }
 
-        .toolbar-toggle svg {
-            transition: .3s ease;
+        .quick-app img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            border-radius: 4px;
         }
 
-        .toolbar-toggle.collapsed svg {
-            transform: rotate(180deg);
-        }
-
-        @media (max-width: 650px) {
-            .browser-shell {
-                top: 8px;
-                width: calc(100% - 16px);
-            }
-
-            .browser-bar {
-                flex-wrap: wrap;
-                border-radius: 14px;
-            }
-
-            .browser-button {
-                width: 34px;
-                height: 34px;
-            }
-
-            .address-box {
-                order: 2;
-                flex-basis: 100%;
-                height: 35px;
-            }
-
-            .tabs-panel {
-                margin-top: 5px;
-            }
-
-            .tab {
-                min-width: 125px;
-            }
-
-            .toolbar-toggle {
-                top: 8px;
-                right: 8px;
-                width: 36px;
-                height: 36px;
-            }
+        @media (max-width: 600px) {
+            .logo-mini { display: none; }
+            .address-bar { max-width: 100%; }
+            .new-tab-logo { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <button class="toolbar-toggle" id="toolbar-toggle" title="Hide browser controls" aria-label="Hide browser controls">
-        <svg viewBox="0 0 24 24">
-            <path d="m6 9 6 6 6-6"/>
-        </svg>
-    </button>
 
-    <main class="browser-shell" id="browser-shell">
-        <div class="browser-bar">
-            <button class="browser-button home" id="home-button" title="Home" aria-label="Go home">
-                <svg viewBox="0 0 24 24">
-                    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
-                    <path d="M9 21v-6h6v6"/>
-                </svg>
-            </button>
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <span class="logo-mini">XYLARA</span>
+        <button class="topbar-btn" id="btn-back" disabled title="Back">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="topbar-btn" id="btn-forward" disabled title="Forward">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="topbar-btn" id="btn-refresh" title="Refresh">
+            <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
+        </button>
+        <button class="topbar-btn" id="btn-home" title="Home">
+            <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
+        </button>
+        <div class="address-bar">
+            <span class="lock-icon">https</span>
+            <input type="text" id="url-input" placeholder="Search or enter URL..." autocomplete="off">
+        </div>
+    </div>
 
-            <button class="browser-button" id="back-button" title="Back" aria-label="Go back">
-                <svg viewBox="0 0 24 24">
-                    <path d="m15 18-6-6 6-6"/>
-                </svg>
-            </button>
+    <!-- TABS -->
+    <div class="tabs-bar" id="tabs-bar">
+        <button class="new-tab-btn" id="new-tab-btn" title="New Tab">+</button>
+    </div>
 
-            <button class="browser-button" id="forward-button" title="Forward" aria-label="Go forward">
-                <svg viewBox="0 0 24 24">
-                    <path d="m9 18 6-6-6-6"/>
-                </svg>
-            </button>
-
-            <button class="browser-button" id="refresh-button" title="Refresh" aria-label="Refresh">
-                <svg viewBox="0 0 24 24">
-                    <path d="M20 11a8 8 0 0 0-15.5-2M4 5v4h4"/>
-                    <path d="M4 13a8 8 0 0 0 15.5 2M20 19v-4h-4"/>
-                </svg>
-            </button>
-
-            <span class="separator"></span>
-
-            <div class="address-box">
-                <svg class="address-icon" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="7"/>
-                    <path d="m20 20-4-4"/>
-                </svg>
-
-                <input id="url-input" type="text" placeholder="Search or enter a URL..."
-                    autocomplete="off" spellcheck="false">
-
-                <button class="go-button" id="go-button" title="Go" aria-label="Go">
-                    <svg viewBox="0 0 24 24">
-                        <path d="m5 12 14-7-4 14-3-6z"/>
-                        <path d="m12 13 7-8"/>
-                    </svg>
-                </button>
+    <!-- BROWSER CONTENT -->
+    <div class="browser-content" id="browser-content">
+        <iframe id="Frame" src="" style="display:none;"></iframe>
+        <div class="new-tab-page" id="new-tab-page">
+            <div class="new-tab-logo">XYLARA</div>
+            <div class="new-tab-sub">Browse Freely</div>
+            <div class="new-tab-search">
+                <input type="text" id="new-tab-search-input" placeholder="Search or enter URL...">
+                <button id="new-tab-search-btn">Go</button>
+            </div>
+            <div class="quick-apps">
+                <div class="quick-app" data-url="https://discord.com">
+                    <img src="/assets/svg/discord.svg" alt="Discord">
+                </div>
+                <div class="quick-app" data-url="https://youtube.com">
+                    <img src="/assets/svg/youtube.svg" alt="YouTube">
+                </div>
+                <div class="quick-app" data-url="https://spotify.com">
+                    <img src="/assets/svg/spotify.svg" alt="Spotify">
+                </div>
+                <div class="quick-app" data-url="https://github.com">
+                    <img src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="GitHub">
+                </div>
             </div>
         </div>
-
-        <div class="tabs-panel" id="tabs-panel">
-            <button class="new-tab" id="new-tab" title="New tab" aria-label="New tab">+</button>
-        </div>
-    </main>
-
-    <iframe id="Frame" title="Xylara browser"></iframe>
+    </div>
 
     <script>
-        const frame = document.getElementById("Frame");
-        const input = document.getElementById("url-input");
-        const shell = document.getElementById("browser-shell");
-        const toggle = document.getElementById("toolbar-toggle");
-        const tabsPanel = document.getElementById("tabs-panel");
+        const frameEl = document.getElementById("Frame");
+        const urlInput = document.getElementById("url-input");
+        const tabsBar = document.getElementById("tabs-bar");
+        const newTabBtn = document.getElementById("new-tab-btn");
+        const newTabPage = document.getElementById("new-tab-page");
 
+        let tabs = [];
+        let activeTabId = null;
         let scramjetFrame = null;
-        let activeTab = 0;
-        let tabs = [{ title: "New Tab", url: "", icon: "" }];
 
-        const defaultWisp = () =>
-            `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/wisp/`;
+        class Tab {
+            constructor(id, url, title) {
+                this.id = id;
+                this.url = url || null;
+                this.title = title || 'New Tab';
+                this.history = [];
+                this.historyIndex = -1;
+            }
+            pushHistory(url) {
+                if (this.historyIndex < this.history.length - 1) {
+                    this.history = this.history.slice(0, this.historyIndex + 1);
+                }
+                this.history.push(url);
+                this.historyIndex = this.history.length - 1;
+            }
+            canGoBack() { return this.historyIndex > 0; }
+            canGoForward() { return this.historyIndex < this.history.length - 1; }
+        }
 
-        function favicon(url) {
-            try {
-                return `https://www.google.com/s2/favicons?domain=${
-                    encodeURIComponent(new URL(url).hostname)
-                }&sz=64`;
-            } catch {
-                return "";
+        function createTabId() {
+            return 't' + Date.now() + Math.random().toString(36).substr(2, 4);
+        }
+
+        function addTab(url, title) {
+            const id = createTabId();
+            const tab = new Tab(id, url, title || (url ? getHostname(url) : 'New Tab'));
+            tabs.push(tab);
+            renderTabs();
+            switchTab(id);
+            if (url) navigateInTab(id, url);
+            return tab;
+        }
+
+        function closeTab(id) {
+            if (tabs.length <= 1) {
+                addTab(null);
+                return;
+            }
+            const idx = tabs.findIndex(t => t.id === id);
+            if (idx === -1) return;
+            tabs.splice(idx, 1);
+            if (activeTabId === id) {
+                const ni = Math.min(idx, tabs.length - 1);
+                activeTabId = tabs[ni].id;
+                updateActiveTab();
+            }
+            renderTabs();
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            updateActiveTab();
+            renderTabs();
+        }
+
+        function updateActiveTab() {
+            const tab = tabs.find(t => t.id === activeTabId);
+            if (!tab) return;
+
+            if (tab.url) {
+                frameEl.style.display = 'block';
+                newTabPage.classList.add('hidden');
+                urlInput.value = tab.url;
+            } else {
+                frameEl.style.display = 'none';
+                newTabPage.classList.remove('hidden');
+                urlInput.value = '';
+            }
+
+            document.getElementById('btn-back').disabled = !tab.canGoBack();
+            document.getElementById('btn-forward').disabled = !tab.canGoForward();
+        }
+
+        function navigateInTab(id, url) {
+            const tab = tabs.find(t => t.id === id);
+            if (!tab) return;
+
+            tab.pushHistory(url);
+            tab.url = url;
+            tab.title = getHostname(url);
+            renderTabs();
+
+            if (activeTabId === id) {
+                loadUrl(url);
             }
         }
 
-        function saveTabs() {
-            localStorage.setItem("browserTabs", JSON.stringify(tabs));
-            localStorage.setItem("activeBrowserTab", String(activeTab));
+        function loadUrl(url) {
+            frameEl.style.display = 'block';
+            newTabPage.classList.add('hidden');
+            urlInput.value = url;
+
+            const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+
+            if (proxyType === 'ultraviolet') {
+                const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
+                frameEl.src = encoded;
+            } else {
+                if (scramjetFrame) {
+                    scramjetFrame.go(url);
+                }
+            }
+        }
+
+        function getHostname(url) {
+            try {
+                return new URL(url.startsWith('http') ? url : 'https://' + url).hostname.replace('www.', '');
+            } catch(e) {
+                return url.substring(0, 20);
+            }
+        }
+
+        function makeUrl(query) {
+            query = query.trim();
+            if (!query) return null;
+            if (!query.includes('.') || query.includes(' ')) {
+                return (localStorage.getItem('search') || 'https://www.google.com/search?q=') + encodeURIComponent(query);
+            }
+            if (!query.startsWith('http')) return 'https://' + query;
+            return query;
         }
 
         function renderTabs() {
-            tabsPanel.querySelectorAll(".tab").forEach(tab => tab.remove());
+            tabsBar.querySelectorAll('.tab').forEach(el => el.remove());
 
-            tabs.forEach((tab, index) => {
-                const element = document.createElement("div");
-                element.className = `tab${index === activeTab ? " active" : ""}`;
-                element.title = tab.url || "New Tab";
-
-                if (tab.icon) {
-                    const image = document.createElement("img");
-                    image.className = "tab-favicon";
-                    image.src = tab.icon;
-                    image.alt = "";
-                    element.appendChild(image);
-                }
-
-                const title = document.createElement("span");
-                title.className = "tab-title";
-                title.textContent = tab.title;
-                element.appendChild(title);
-
-                const close = document.createElement("button");
-                close.className = "close-tab";
-                close.type = "button";
-                close.title = "Close tab";
-                close.textContent = "×";
-
-                close.addEventListener("click", event => {
-                    event.stopPropagation();
-                    closeTab(index);
-                });
-
-                element.appendChild(close);
-
-                element.addEventListener("click", () => switchTab(index));
-                tabsPanel.insertBefore(element, document.getElementById("new-tab"));
+            tabs.forEach(tab => {
+                const el = document.createElement('div');
+                el.className = 'tab' + (tab.id === activeTabId ? ' active' : '');
+                el.innerHTML = '<span class="tab-title">' + escapeHtml(tab.title || 'New Tab') + '</span>' +
+                    (tabs.length > 1 ? '<button class="tab-close">X</button>' : '');
+                el.querySelector('.tab-title').addEventListener('click', () => switchTab(tab.id));
+                const cb = el.querySelector('.tab-close');
+                if (cb) cb.addEventListener('click', (e) => { e.stopPropagation(); closeTab(tab.id); });
+                tabsBar.insertBefore(el, newTabBtn);
             });
-
-            saveTabs();
         }
 
-        function switchTab(index) {
-            activeTab = index;
-            const tab = tabs[activeTab];
+        function escapeHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
 
-            if (tab.url) {
-                input.value = tab.url;
-                loadProxyPage(tab.url);
-            } else {
-                input.value = "";
-                frame.src = "";
-                localStorage.removeItem("url");
+        // Event listeners
+        newTabBtn.addEventListener('click', () => addTab(null));
+
+        document.getElementById('btn-home').addEventListener('click', () => {
+            const tab = tabs.find(t => t.id === activeTabId);
+            if (tab) {
+                tab.url = null;
+                tab.title = 'New Tab';
+                updateActiveTab();
+                renderTabs();
             }
+        });
 
-            renderTabs();
-        }
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+            const tab = tabs.find(t => t.id === activeTabId);
+            if (tab && tab.url) loadUrl(tab.url);
+        });
 
-        function closeTab(index) {
-            if (tabs.length === 1) {
-                tabs[0] = { title: "New Tab", url: "", icon: "" };
-                activeTab = 0;
-                frame.src = "";
-                input.value = "";
-            } else {
-                tabs.splice(index, 1);
-                if (activeTab >= tabs.length) activeTab = tabs.length - 1;
-                if (index <= activeTab && activeTab > 0) activeTab--;
-                switchTab(activeTab);
+        document.getElementById('btn-back').addEventListener('click', () => {
+            const tab = tabs.find(t => t.id === activeTabId);
+            if (tab && tab.canGoBack()) {
+                tab.historyIndex--;
+                tab.url = tab.history[tab.historyIndex];
+                loadUrl(tab.url);
+                document.getElementById('btn-back').disabled = !tab.canGoBack();
+                document.getElementById('btn-forward').disabled = !tab.canGoForward();
             }
+        });
 
-            renderTabs();
-        }
-
-        function newTab() {
-            tabs.push({ title: "New Tab", url: "", icon: "" });
-            activeTab = tabs.length - 1;
-            frame.src = "";
-            input.value = "";
-            localStorage.removeItem("url");
-            renderTabs();
-            input.focus();
-        }
-
-        function updateTab(url, title) {
-            tabs[activeTab] = {
-                title: title || new URL(url).hostname,
-                url,
-                icon: favicon(url)
-            };
-
-            input.value = url;
-            renderTabs();
-        }
-
-        function loadProxyPage(url) {
-            const proxy = localStorage.getItem("proxy") || "ultraviolet";
-
-            if (proxy === "ultraviolet") {
-                const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
-                localStorage.setItem("url", encoded);
-                frame.src = encoded;
-            } else if (scramjetFrame) {
-                localStorage.setItem("url", url);
-                scramjetFrame.go(url);
+        document.getElementById('btn-forward').addEventListener('click', () => {
+            const tab = tabs.find(t => t.id === activeTabId);
+            if (tab && tab.canGoForward()) {
+                tab.historyIndex++;
+                tab.url = tab.history[tab.historyIndex];
+                loadUrl(tab.url);
+                document.getElementById('btn-back').disabled = !tab.canGoBack();
+                document.getElementById('btn-forward').disabled = !tab.canGoForward();
             }
-        }
+        });
 
-        function parseQuery(value) {
-            const query = value.trim();
-            if (!query) return "";
-
-            if (/^https?:\/\//i.test(query)) return query;
-
-            if (query.includes(".") && !query.includes(" ")) {
-                return `https://${query}`;
-            }
-
-            const engine = localStorage.getItem("search") ||
-                "https://www.google.com/search?q=";
-
-            return engine + encodeURIComponent(query);
-        }
-
-        function navigate() {
-            const target = parseQuery(input.value);
-            if (!target) return;
-
-            loadProxyPage(target);
-
-            let title = target;
-            try {
-                title = new URL(target).hostname;
-            } catch {}
-
-            updateTab(target, title);
-            input.blur();
-        }
-
-        function historyMove(direction) {
-            try {
-                if (scramjetFrame) {
-                    const method = direction < 0 ? "goBack" : "goForward";
-                    if (typeof scramjetFrame[method] === "function") {
-                        scramjetFrame[method]();
-                        return;
-                    }
-                }
-
-                frame.contentWindow.history.go(direction);
-            } catch (error) {
-                console.warn("Browser history unavailable:", error);
-            }
-        }
-
-        function refresh() {
-            const current = tabs[activeTab]?.url;
-            if (!current) return;
-
-            if (scramjetFrame && typeof scramjetFrame.reload === "function") {
-                scramjetFrame.reload();
-            } else {
-                frame.src = frame.src;
-            }
-        }
-
-        async function initProxy() {
-            if ("serviceWorker" in navigator) {
-                try {
-                    await navigator.serviceWorker.register("/sw.js");
-                    await navigator.serviceWorker.ready;
-                } catch (error) {
-                    console.error("Service worker error:", error);
+        urlInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const url = makeUrl(urlInput.value);
+                if (url) {
+                    const tab = tabs.find(t => t.id === activeTabId);
+                    if (tab) navigateInTab(activeTabId, url);
                 }
             }
+        });
 
+        document.getElementById('new-tab-search-btn').addEventListener('click', () => {
+            const input = document.getElementById('new-tab-search-input');
+            const url = makeUrl(input.value);
+            if (url) {
+                const tab = tabs.find(t => t.id === activeTabId);
+                if (tab) navigateInTab(activeTabId, url);
+                input.value = '';
+            }
+        });
+
+        document.getElementById('new-tab-search-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('new-tab-search-btn').click();
+        });
+
+        document.querySelectorAll('.quick-app').forEach(app => {
+            app.addEventListener('click', () => {
+                const tab = tabs.find(t => t.id === activeTabId);
+                if (tab) navigateInTab(activeTabId, app.dataset.url);
+            });
+        });
+
+        // Initialize
+        async function init() {
             try {
-                const mux = new BareMux.BareMuxConnection("/baremux/worker.js");
+                const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+                const wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
                 const transport = localStorage.getItem("transport") || "libcurl";
-                const path = transport === "epoxy"
-                    ? "/epoxy/index.mjs"
-                    : "/libcurl/index.mjs";
-
-                if (await mux.getTransport() !== path) {
-                    await mux.setTransport(path, [{ wisp: localStorage.getItem("wisp") || defaultWisp() }]);
+                const transportPath = transport === "epoxy" ? "/epoxy/index.mjs" : "/libcurl/index.mjs";
+                if (await connection.getTransport() !== transportPath) {
+                    await connection.setTransport(transportPath, [{ wisp: wispUrl }]);
                 }
-            } catch (error) {
-                console.error("Transport error:", error);
-            }
+            } catch (err) {}
 
             try {
-                const serviceworker = navigator.serviceWorker.controller ||
-                    (await navigator.serviceWorker.ready).active;
-
-                let EpoxyTransport = self.EpoxyTransport;
-                if (EpoxyTransport) {
-                    EpoxyTransport = EpoxyTransport.EpoxyTransport ||
-                        EpoxyTransport.default ||
-                        EpoxyTransport;
+                await navigator.serviceWorker.ready;
+                const serviceworker = navigator.serviceWorker.controller ?? (await navigator.serviceWorker.ready).active;
+                let wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+                let EpoxyTransport;
+                if (self.EpoxyTransport) {
+                    EpoxyTransport = self.EpoxyTransport.EpoxyTransport || self.EpoxyTransport.default || self.EpoxyTransport;
                 } else {
-                    const module = await import("/epoxy/index.mjs");
-                    EpoxyTransport = module.EpoxyTransport || module.default;
+                    const epoxyModule = await import('/epoxy/index.mjs');
+                    EpoxyTransport = epoxyModule.EpoxyTransport || epoxyModule.default;
                 }
-
-                const transport = new EpoxyTransport({
-                    wisp: localStorage.getItem("wisp") || defaultWisp()
-                });
-
+                const transport = new EpoxyTransport({ wisp: wispUrl });
                 await transport.init();
-
-                const scramjet = new $scramjetController.Controller({
-                    serviceworker,
-                    transport,
-                    scramjetConfig: $scramjet.defaultConfig
-                });
-
+                const { Controller } = $scramjetController;
+                const { defaultConfig } = $scramjet;
+                const scramjet = new Controller({ serviceworker, transport, scramjetConfig: defaultConfig });
                 await scramjet.wait();
-                scramjetFrame = scramjet.createFrame(frame);
+                window.sj = scramjet;
+                scramjetFrame = scramjet.createFrame(frameEl);
+            } catch (error) {}
 
-                const saved = tabs[activeTab]?.url;
-                if (saved) loadProxyPage(saved);
-            } catch (error) {
-                console.error("Scramjet initialization error:", error);
+            // Load saved URL or new tab
+            const savedUrl = localStorage.getItem("url");
+            if (savedUrl) {
+                localStorage.removeItem("url");
+                addTab(savedUrl);
+            } else {
+                addTab(null);
             }
         }
 
-        toggle.addEventListener("click", () => {
-            const hidden = shell.classList.toggle("hidden");
-            toggle.classList.toggle("collapsed", hidden);
-            toggle.title = hidden ? "Show browser controls" : "Hide browser controls";
-            toggle.setAttribute("aria-label", toggle.title);
-        });
-
-        document.getElementById("home-button").addEventListener("click", () => {
-            location.href = "/";
-        });
-
-        document.getElementById("back-button").addEventListener("click", () => historyMove(-1));
-        document.getElementById("forward-button").addEventListener("click", () => historyMove(1));
-        document.getElementById("refresh-button").addEventListener("click", refresh);
-        document.getElementById("go-button").addEventListener("click", navigate);
-        document.getElementById("new-tab").addEventListener("click", newTab);
-
-        input.addEventListener("keydown", event => {
-            if (event.key === "Enter") navigate();
-        });
-
-        try {
-            const storedTabs = JSON.parse(localStorage.getItem("browserTabs") || "null");
-            if (Array.isArray(storedTabs) && storedTabs.length) {
-                tabs = storedTabs;
-                activeTab = Math.min(
-                    Number(localStorage.getItem("activeBrowserTab")) || 0,
-                    tabs.length - 1
-                );
-            }
-        } catch {}
-
-        renderTabs();
-        document.addEventListener("DOMContentLoaded", initProxy);
+        document.addEventListener("DOMContentLoaded", init);
     </script>
 </body>
 </html>
