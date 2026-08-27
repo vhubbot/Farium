@@ -3,73 +3,348 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <script src="/baremux/index.js"></script>
     <script src="/epoxy/index.mjs" type="module"></script>
     <script src="/uv/uv.bundle.js"></script>
     <script src="/uv/uv.config.js"></script>
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
+
     <title>Xylara</title>
+
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #000;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --panel: rgba(15, 15, 25, 0.78);
+            --panel-hover: rgba(139, 92, 246, 0.22);
+            --border: rgba(255, 255, 255, 0.14);
+            --purple: #8b5cf6;
+            --text-muted: rgba(255, 255, 255, 0.58);
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            background: #050509;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(5, 5, 12, 0.72) 0,
+                    rgba(5, 5, 12, 0.18) 115px,
+                    transparent 180px
+                ),
+                radial-gradient(
+                    circle at 50% 0%,
+                    rgba(139, 92, 246, 0.16),
+                    transparent 35%
+                );
+        }
+
         iframe {
+            position: fixed;
+            inset: 0;
             width: 100vw;
             height: 100vh;
             border: none;
+            background: #fff;
         }
-        .top-hover-trigger {
+
+        .browser-toolbar {
             position: fixed;
-            top: 0;
+            top: 14px;
             left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 50px;
             z-index: 1000;
-        }
-        .search-container {
-            display: none;
-            position: absolute;
-            top: 10px;
-            left: 50%;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            width: min(760px, calc(100% - 24px));
+            padding: 7px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--panel);
+            box-shadow:
+                0 16px 45px rgba(0, 0, 0, 0.42),
+                inset 0 1px 0 rgba(255, 255, 255, 0.09);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            padding: 10px 20px;
-            border-radius: 15px;
-            color: white;
-            min-width: 300px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
-            font-family: sans-serif;
-            border: 1px solid #444;
+            animation: toolbarIn 0.45s ease both;
         }
-        .top-hover-trigger:hover .search-container, .search-container:focus-within {
-            display: block;
+
+        .browser-toolbar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            background: linear-gradient(
+                100deg,
+                rgba(139, 92, 246, 0.12),
+                transparent 45%,
+                rgba(255, 255, 255, 0.04)
+            );
+            pointer-events: none;
         }
-        #url-input {
+
+        .toolbar-button {
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.78);
             background: transparent;
-            border: none;
-            color: white;
+            cursor: pointer;
+            transition: 0.22s ease;
+        }
+
+        .toolbar-button:hover {
+            color: #fff;
+            border-color: rgba(167, 139, 250, 0.5);
+            background: var(--panel-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(139, 92, 246, 0.2);
+        }
+
+        .toolbar-button:active {
+            transform: scale(0.92);
+        }
+
+        .toolbar-button.home {
+            color: #fff;
+            background: linear-gradient(135deg, #9b6cff, #7040dc);
+            box-shadow: 0 5px 18px rgba(139, 92, 246, 0.3);
+        }
+
+        .toolbar-button.home:hover {
+            background: linear-gradient(135deg, #b39aff, #8555ef);
+        }
+
+        .toolbar-button svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            margin: 0 2px;
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+            height: 38px;
+            padding: 0 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.24);
+            transition: 0.25s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: rgba(167, 139, 250, 0.75);
+            background: rgba(0, 0, 0, 0.36);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+        }
+
+        .search-icon {
+            flex: 0 0 auto;
+            width: 16px;
+            height: 16px;
+            margin-right: 9px;
+            color: var(--text-muted);
+        }
+
+        #url-input {
             width: 100%;
-            text-align: center;
+            min-width: 0;
+            padding: 0;
+            border: none;
             outline: none;
-            font-size: 14px;
+            color: #fff;
+            background: transparent;
+            font: inherit;
+            font-size: 0.82rem;
+        }
+
+        #url-input::placeholder {
+            color: rgba(255, 255, 255, 0.42);
+        }
+
+        .search-submit {
+            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            margin-left: 6px;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            background: var(--purple);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .search-submit:hover {
+            background: #a78bfa;
+            transform: scale(1.06);
+        }
+
+        .search-submit svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        @keyframes toolbarIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .browser-toolbar {
+                top: 10px;
+                gap: 4px;
+                padding: 6px;
+                border-radius: 15px;
+            }
+
+            .toolbar-button {
+                width: 34px;
+                height: 36px;
+                border-radius: 10px;
+            }
+
+            .toolbar-button svg {
+                width: 17px;
+                height: 17px;
+            }
+
+            .divider {
+                height: 22px;
+                margin: 0;
+            }
+
+            .search-box {
+                height: 36px;
+                padding: 0 9px;
+            }
+
+            #url-input {
+                font-size: 0.75rem;
+            }
+
+            .search-submit {
+                width: 27px;
+                height: 27px;
+            }
+        }
+
+        @media (max-width: 390px) {
+            .toolbar-button.refresh {
+                display: none;
+            }
+
+            .search-icon {
+                margin-right: 5px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="top-hover-trigger">
-        <div class="search-container">
-            <input type="text" id="url-input" placeholder="Enter URL or Search...">
+    <div class="browser-toolbar">
+        <button class="toolbar-button home" id="home-button" title="Home" aria-label="Go home">
+            <svg viewBox="0 0 24 24">
+                <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
+                <path d="M9 21v-6h6v6"/>
+            </svg>
+        </button>
+
+        <button class="toolbar-button" id="back-button" title="Back" aria-label="Go back">
+            <svg viewBox="0 0 24 24">
+                <path d="m15 18-6-6 6-6"/>
+            </svg>
+        </button>
+
+        <button class="toolbar-button" id="forward-button" title="Forward" aria-label="Go forward">
+            <svg viewBox="0 0 24 24">
+                <path d="m9 18 6-6-6-6"/>
+            </svg>
+        </button>
+
+        <button class="toolbar-button refresh" id="refresh-button" title="Refresh" aria-label="Refresh page">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4"/>
+                <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"/>
+            </svg>
+        </button>
+
+        <div class="divider"></div>
+
+        <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"/>
+                <path d="m20 20-4-4"/>
+            </svg>
+
+            <input type="text" id="url-input" placeholder="Search or enter a URL..." autocomplete="off">
+
+            <button class="search-submit" id="search-submit" title="Search" aria-label="Search">
+                <svg viewBox="0 0 24 24">
+                    <path d="m5 12 14-7-4 14-3-6z"/>
+                    <path d="m12 13 7-8"/>
+                </svg>
+            </button>
         </div>
     </div>
+
     <iframe id="Frame" src=""></iframe>
+
     <script>
         const frameEl = document.getElementById("Frame");
         const input = document.getElementById("url-input");
+        const homeButton = document.getElementById("home-button");
+        const backButton = document.getElementById("back-button");
+        const forwardButton = document.getElementById("forward-button");
+        const refreshButton = document.getElementById("refresh-button");
+        const searchSubmit = document.getElementById("search-submit");
 
         let scramjetFrame = null;
 
@@ -79,8 +354,8 @@
 
             if (!url.includes('.') || url.includes(' ')) {
                 url = (localStorage.getItem('search') || 'https://www.google.com/search?q=') + encodeURIComponent(query);
-            } else {
-                if (!url.startsWith('http')) url = 'https://' + url;
+            } else if (!url.startsWith('http')) {
+                url = 'https://' + url;
             }
 
             const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
@@ -89,16 +364,33 @@
                 const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
                 localStorage.setItem("url", encoded);
                 frameEl.src = encoded;
+            } else if (scramjetFrame) {
+                localStorage.setItem("url", url);
+                scramjetFrame.go(url);
             } else {
-                if (scramjetFrame) {
-                    localStorage.setItem("url", url);
-                    scramjetFrame.go(url);
-                } else {
-                    console.error("Scramjet frame not initialized yet.");
-                }
+                console.error("Scramjet frame not initialized yet.");
             }
+
             input.value = url;
             input.blur();
+        }
+
+        function navigateFrameHistory(direction) {
+            try {
+                if (scramjetFrame && typeof scramjetFrame.goBack === "function" && direction < 0) {
+                    scramjetFrame.goBack();
+                    return;
+                }
+
+                if (scramjetFrame && typeof scramjetFrame.goForward === "function" && direction > 0) {
+                    scramjetFrame.goForward();
+                    return;
+                }
+
+                frameEl.contentWindow.history.go(direction);
+            } catch (error) {
+                console.warn("Frame history is unavailable:", error);
+            }
         }
 
         async function init() {
@@ -113,10 +405,13 @@
 
             try {
                 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-                const wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+                const wispUrl = localStorage.getItem("wisp") ||
+                    ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
                 const transport = localStorage.getItem("transport") || "libcurl";
-                const transportPath = transport === "epoxy" ? "/epoxy/index.mjs" : "/libcurl/index.mjs";
-                
+                const transportPath = transport === "epoxy"
+                    ? "/epoxy/index.mjs"
+                    : "/libcurl/index.mjs";
+
                 if (await connection.getTransport() !== transportPath) {
                     await connection.setTransport(transportPath, [{ wisp: wispUrl }]);
                 }
@@ -126,12 +421,19 @@
 
             try {
                 await navigator.serviceWorker.ready;
-                const serviceworker = navigator.serviceWorker.controller ?? (await navigator.serviceWorker.ready).active;
-                let wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+
+                const serviceworker = navigator.serviceWorker.controller ??
+                    (await navigator.serviceWorker.ready).active;
+
+                const wispUrl = localStorage.getItem("wisp") ||
+                    ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
 
                 let EpoxyTransport;
+
                 if (self.EpoxyTransport) {
-                    EpoxyTransport = self.EpoxyTransport.EpoxyTransport || self.EpoxyTransport.default || self.EpoxyTransport;
+                    EpoxyTransport = self.EpoxyTransport.EpoxyTransport ||
+                        self.EpoxyTransport.default ||
+                        self.EpoxyTransport;
                 } else {
                     const epoxyModule = await import('/epoxy/index.mjs');
                     EpoxyTransport = epoxyModule.EpoxyTransport || epoxyModule.default;
@@ -151,7 +453,6 @@
 
                 await scramjet.wait();
                 window.sj = scramjet;
-
                 scramjetFrame = scramjet.createFrame(frameEl);
 
                 const savedUrl = localStorage.getItem("url");
@@ -159,7 +460,10 @@
 
                 if (savedUrl) {
                     if (proxyType === 'scramjet' || !savedUrl.startsWith(__uv$config.prefix)) {
-                        const target = savedUrl.startsWith("http") ? savedUrl : "https://example.com";
+                        const target = savedUrl.startsWith("http")
+                            ? savedUrl
+                            : "https://example.com";
+
                         scramjetFrame.go(target);
                         input.value = target;
                     } else {
@@ -172,12 +476,46 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            init();
+        document.addEventListener("DOMContentLoaded", init);
+
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                handleNavigation(input.value);
+            }
         });
 
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") handleNavigation(input.value);
+        searchSubmit.addEventListener("click", () => {
+            handleNavigation(input.value);
+        });
+
+        homeButton.addEventListener("click", () => {
+            window.location.href = "/";
+        });
+
+        backButton.addEventListener("click", () => {
+            navigateFrameHistory(-1);
+        });
+
+        forwardButton.addEventListener("click", () => {
+            navigateFrameHistory(1);
+        });
+
+        refreshButton.addEventListener("click", () => {
+            refreshButton.style.transform = "rotate(180deg)";
+
+            setTimeout(() => {
+                refreshButton.style.transform = "";
+            }, 350);
+
+            try {
+                if (scramjetFrame && typeof scramjetFrame.reload === "function") {
+                    scramjetFrame.reload();
+                } else {
+                    frameEl.contentWindow.location.reload();
+                }
+            } catch (error) {
+                frameEl.src = frameEl.src;
+            }
         });
     </script>
 </body>
