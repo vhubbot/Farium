@@ -17,11 +17,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --panel: rgba(15, 15, 25, 0.78);
-            --panel-hover: rgba(139, 92, 246, 0.22);
-            --border: rgba(255, 255, 255, 0.14);
             --purple: #8b5cf6;
-            --text-muted: rgba(255, 255, 255, 0.58);
+            --purple-light: #a78bfa;
+            --panel: rgba(15, 15, 25, 0.82);
+            --border: rgba(255, 255, 255, 0.14);
+            --muted: rgba(255, 255, 255, 0.58);
         }
 
         * {
@@ -35,7 +35,17 @@
             margin: 0;
             overflow: hidden;
             background: #050509;
+            color: white;
             font-family: 'Inter', sans-serif;
+        }
+
+        iframe {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            background: white;
         }
 
         body::before {
@@ -47,35 +57,73 @@
             background:
                 linear-gradient(
                     180deg,
-                    rgba(5, 5, 12, 0.72) 0,
-                    rgba(5, 5, 12, 0.18) 115px,
-                    transparent 180px
+                    rgba(5, 5, 12, 0.76),
+                    rgba(5, 5, 12, 0.2) 120px,
+                    transparent 210px
                 ),
                 radial-gradient(
-                    circle at 50% 0%,
-                    rgba(139, 92, 246, 0.16),
-                    transparent 35%
+                    circle at 50% 0,
+                    rgba(139, 92, 246, 0.2),
+                    transparent 36%
                 );
         }
 
-        iframe {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            background: #fff;
+        button,
+        input {
+            font: inherit;
         }
 
+        /* Toolbar toggle */
+        .toolbar-toggle {
+            position: fixed;
+            top: 14px;
+            right: 18px;
+            z-index: 1200;
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            color: white;
+            background: rgba(15, 15, 25, 0.8);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .toolbar-toggle:hover {
+            color: white;
+            background: rgba(139, 92, 246, 0.35);
+            border-color: var(--purple-light);
+            transform: translateY(-2px);
+        }
+
+        .toolbar-toggle svg {
+            width: 19px;
+            height: 19px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .toolbar-toggle.collapsed svg {
+            transform: rotate(180deg);
+        }
+
+        /* Browser toolbar */
         .browser-toolbar {
             position: fixed;
             top: 14px;
             left: 50%;
             z-index: 1000;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 7px;
-            width: min(760px, calc(100% - 24px));
+            width: min(820px, calc(100% - 115px));
             padding: 7px;
             border: 1px solid var(--border);
             border-radius: 18px;
@@ -86,21 +134,13 @@
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             transform: translateX(-50%);
+            transition: 0.35s ease;
             animation: toolbarIn 0.45s ease both;
         }
 
-        .browser-toolbar::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            border-radius: inherit;
-            background: linear-gradient(
-                100deg,
-                rgba(139, 92, 246, 0.12),
-                transparent 45%,
-                rgba(255, 255, 255, 0.04)
-            );
+        .browser-toolbar.collapsed {
+            transform: translate(-50%, -145%);
+            opacity: 0;
             pointer-events: none;
         }
 
@@ -120,9 +160,9 @@
         }
 
         .toolbar-button:hover {
-            color: #fff;
-            border-color: rgba(167, 139, 250, 0.5);
-            background: var(--panel-hover);
+            color: white;
+            border-color: rgba(167, 139, 250, 0.55);
+            background: rgba(139, 92, 246, 0.24);
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(139, 92, 246, 0.2);
         }
@@ -132,13 +172,9 @@
         }
 
         .toolbar-button.home {
-            color: #fff;
+            color: white;
             background: linear-gradient(135deg, #9b6cff, #7040dc);
             box-shadow: 0 5px 18px rgba(139, 92, 246, 0.3);
-        }
-
-        .toolbar-button.home:hover {
-            background: linear-gradient(135deg, #b39aff, #8555ef);
         }
 
         .toolbar-button svg {
@@ -162,7 +198,7 @@
             display: flex;
             align-items: center;
             flex: 1;
-            min-width: 0;
+            min-width: 180px;
             height: 38px;
             padding: 0 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -172,8 +208,7 @@
         }
 
         .search-box:focus-within {
-            border-color: rgba(167, 139, 250, 0.75);
-            background: rgba(0, 0, 0, 0.36);
+            border-color: rgba(167, 139, 250, 0.78);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
         }
 
@@ -182,7 +217,10 @@
             width: 16px;
             height: 16px;
             margin-right: 9px;
-            color: var(--text-muted);
+            fill: none;
+            stroke: var(--muted);
+            stroke-width: 2;
+            stroke-linecap: round;
         }
 
         #url-input {
@@ -191,9 +229,8 @@
             padding: 0;
             border: none;
             outline: none;
-            color: #fff;
+            color: white;
             background: transparent;
-            font: inherit;
             font-size: 0.82rem;
         }
 
@@ -217,13 +254,214 @@
         }
 
         .search-submit:hover {
-            background: #a78bfa;
+            background: var(--purple-light);
             transform: scale(1.06);
         }
 
         .search-submit svg {
             width: 15px;
             height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Browser tabs */
+        .tabs {
+            display: none;
+            order: 10;
+            width: 100%;
+            gap: 6px;
+            padding: 2px 1px 0;
+            overflow-x: auto;
+        }
+
+        body.browser-mode .tabs {
+            display: flex;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 120px;
+            max-width: 190px;
+            height: 30px;
+            padding: 0 10px;
+            overflow: hidden;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .tab.active,
+        .tab:hover {
+            color: white;
+            border-color: rgba(167, 139, 250, 0.4);
+            background: rgba(139, 92, 246, 0.24);
+        }
+
+        .tab img {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        .tab span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.7rem;
+        }
+
+        .new-tab {
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 9px;
+            color: white;
+            background: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .new-tab:hover {
+            background: var(--purple);
+        }
+
+        /* Searcher mode */
+        .searcher-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            z-index: 20;
+            display: none;
+            width: min(720px, calc(100% - 30px));
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        body.searcher-mode .searcher-panel {
+            display: block;
+        }
+
+        body.searcher-mode .browser-toolbar {
+            width: min(720px, calc(100% - 30px));
+        }
+
+        body.searcher-mode .browser-toolbar .toolbar-button:not(.home),
+        body.searcher-mode .browser-toolbar .divider {
+            display: none;
+        }
+
+        .searcher-logo {
+            margin-bottom: 10px;
+            color: white;
+            font-size: clamp(2.5rem, 8vw, 5.2rem);
+            font-weight: 800;
+            letter-spacing: -0.08em;
+            text-shadow: 0 15px 45px rgba(139, 92, 246, 0.35);
+        }
+
+        .searcher-subtitle {
+            margin-bottom: 28px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .searcher-hint {
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.38);
+            font-size: 0.72rem;
+        }
+
+        /* Mode chooser */
+        .mode-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(3, 3, 8, 0.7);
+            backdrop-filter: blur(16px);
+            animation: fadeIn 0.25s ease;
+        }
+
+        .mode-card {
+            width: min(560px, 100%);
+            padding: 28px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            background: rgba(18, 18, 30, 0.9);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.55);
+            text-align: center;
+        }
+
+        .mode-card h1 {
+            margin: 0 0 8px;
+            font-size: 1.65rem;
+        }
+
+        .mode-card p {
+            margin: 0 0 22px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .mode-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .mode-option {
+            min-height: 145px;
+            padding: 20px 14px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            color: white;
+            background: rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .mode-option:hover {
+            border-color: var(--purple-light);
+            background: rgba(139, 92, 246, 0.22);
+            transform: translateY(-4px);
+        }
+
+        .mode-option svg {
+            width: 34px;
+            height: 34px;
+            margin-bottom: 12px;
+            fill: none;
+            stroke: var(--purple-light);
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .mode-option strong,
+        .mode-option small {
+            display: block;
+        }
+
+        .mode-option small {
+            margin-top: 7px;
+            color: var(--muted);
+            font-size: 0.72rem;
+            line-height: 1.4;
         }
 
         @keyframes toolbarIn {
@@ -238,12 +476,31 @@
             }
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         @media (max-width: 600px) {
+            .toolbar-toggle {
+                top: 10px;
+                right: 10px;
+                width: 36px;
+                height: 36px;
+            }
+
             .browser-toolbar {
                 top: 10px;
+                left: 10px;
+                width: calc(100% - 20px);
+                transform: none;
                 gap: 4px;
                 padding: 6px;
                 border-radius: 15px;
+            }
+
+            .browser-toolbar.collapsed {
+                transform: translateY(-145%);
             }
 
             .toolbar-button {
@@ -255,11 +512,6 @@
             .toolbar-button svg {
                 width: 17px;
                 height: 17px;
-            }
-
-            .divider {
-                height: 22px;
-                margin: 0;
             }
 
             .search-box {
@@ -275,21 +527,25 @@
                 width: 27px;
                 height: 27px;
             }
-        }
 
-        @media (max-width: 390px) {
-            .toolbar-button.refresh {
-                display: none;
+            .mode-options {
+                grid-template-columns: 1fr;
             }
 
-            .search-icon {
-                margin-right: 5px;
+            .mode-card {
+                padding: 23px 17px;
             }
         }
     </style>
 </head>
-<body>
-    <div class="browser-toolbar">
+<body class="browser-mode">
+    <button class="toolbar-toggle" id="toolbar-toggle" title="Hide toolbar" aria-label="Toggle toolbar">
+        <svg viewBox="0 0 24 24">
+            <path d="M6 9l6 6 6-6"/>
+        </svg>
+    </button>
+
+    <div class="browser-toolbar" id="browser-toolbar">
         <button class="toolbar-button home" id="home-button" title="Home" aria-label="Go home">
             <svg viewBox="0 0 24 24">
                 <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
@@ -297,26 +553,26 @@
             </svg>
         </button>
 
-        <button class="toolbar-button" id="back-button" title="Back" aria-label="Go back">
+        <button class="toolbar-button browser-only" id="back-button" title="Back" aria-label="Go back">
             <svg viewBox="0 0 24 24">
                 <path d="m15 18-6-6 6-6"/>
             </svg>
         </button>
 
-        <button class="toolbar-button" id="forward-button" title="Forward" aria-label="Go forward">
+        <button class="toolbar-button browser-only" id="forward-button" title="Forward" aria-label="Go forward">
             <svg viewBox="0 0 24 24">
                 <path d="m9 18 6-6-6-6"/>
             </svg>
         </button>
 
-        <button class="toolbar-button refresh" id="refresh-button" title="Refresh" aria-label="Refresh page">
+        <button class="toolbar-button refresh browser-only" id="refresh-button" title="Refresh" aria-label="Refresh page">
             <svg viewBox="0 0 24 24">
                 <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4"/>
                 <path d="M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"/>
             </svg>
         </button>
 
-        <div class="divider"></div>
+        <div class="divider browser-only"></div>
 
         <div class="search-box">
             <svg class="search-icon" viewBox="0 0 24 24">
@@ -333,9 +589,46 @@
                 </svg>
             </button>
         </div>
+
+        <div class="tabs" id="tabs">
+            <button class="new-tab" id="new-tab" title="New tab" aria-label="Open new tab">+</button>
+        </div>
     </div>
 
+    <main class="searcher-panel">
+        <div class="searcher-logo">xylara</div>
+        <div class="searcher-subtitle">Search privately. Browse freely.</div>
+        <div class="searcher-hint">Press Enter to search</div>
+    </main>
+
     <iframe id="Frame" src=""></iframe>
+
+    <div class="mode-overlay" id="mode-overlay">
+        <div class="mode-card">
+            <h1>Choose your experience</h1>
+            <p>You can change this anytime from the mode button.</p>
+
+            <div class="mode-options">
+                <button class="mode-option" data-mode="searcher">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"/>
+                        <path d="m20 20-4-4"/>
+                    </svg>
+                    <strong>Searcher</strong>
+                    <small>A clean search-focused experience inspired by modern search engines.</small>
+                </button>
+
+                <button class="mode-option" data-mode="browser">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="16" rx="2"/>
+                        <path d="M3 9h18M7 6h.01M10 6h.01"/>
+                    </svg>
+                    <strong>Browser</strong>
+                    <small>Use tabs, navigation buttons, favicons, and a full browsing toolbar.</small>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         const frameEl = document.getElementById("Frame");
@@ -345,22 +638,83 @@
         const forwardButton = document.getElementById("forward-button");
         const refreshButton = document.getElementById("refresh-button");
         const searchSubmit = document.getElementById("search-submit");
+        const toolbar = document.getElementById("browser-toolbar");
+        const toolbarToggle = document.getElementById("toolbar-toggle");
+        const modeOverlay = document.getElementById("mode-overlay");
+        const tabsElement = document.getElementById("tabs");
+        const newTabButton = document.getElementById("new-tab");
 
         let scramjetFrame = null;
-
-        async function handleNavigation(query) {
-            let url = query.trim();
-            if (!url) return;
-
-            if (!url.includes('.') || url.includes(' ')) {
-                url = (localStorage.getItem('search') || 'https://www.google.com/search?q=') + encodeURIComponent(query);
-            } else if (!url.startsWith('http')) {
-                url = 'https://' + url;
+        let activeTab = 0;
+        let tabs = [
+            {
+                title: "New Tab",
+                url: "",
+                icon: ""
             }
+        ];
 
-            const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+        function getSiteIcon(url) {
+            try {
+                const domain = new URL(url).hostname;
+                return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=64`;
+            } catch {
+                return "";
+            }
+        }
 
-            if (proxyType === 'ultraviolet') {
+        function updateTab(tabUrl, queryText) {
+            const tab = tabs[activeTab];
+            tab.url = tabUrl;
+            tab.title = queryText || "New Tab";
+            tab.icon = getSiteIcon(tabUrl);
+            renderTabs();
+        }
+
+        function renderTabs() {
+            if (!tabsElement) return;
+
+            tabsElement.querySelectorAll(".tab").forEach(tab => tab.remove());
+
+            tabs.forEach((tab, index) => {
+                const tabButton = document.createElement("button");
+                tabButton.className = `tab${index === activeTab ? " active" : ""}`;
+                tabButton.title = tab.url || "New Tab";
+
+                if (tab.icon) {
+                    const icon = document.createElement("img");
+                    icon.src = tab.icon;
+                    icon.alt = "";
+                    tabButton.appendChild(icon);
+                }
+
+                const title = document.createElement("span");
+                title.textContent = tab.title;
+                tabButton.appendChild(title);
+
+                tabButton.addEventListener("click", () => {
+                    activeTab = index;
+                    const selectedTab = tabs[activeTab];
+
+                    if (selectedTab.url) {
+                        loadTarget(selectedTab.url);
+                        input.value = "";
+                    } else {
+                        input.value = "";
+                        input.focus();
+                    }
+
+                    renderTabs();
+                });
+
+                tabsElement.insertBefore(tabButton, newTabButton);
+            });
+        }
+
+        function loadTarget(url) {
+            const proxyType = localStorage.getItem("proxy") || "ultraviolet";
+
+            if (proxyType === "ultraviolet") {
                 const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
                 localStorage.setItem("url", encoded);
                 frameEl.src = encoded;
@@ -370,19 +724,41 @@
             } else {
                 console.error("Scramjet frame not initialized yet.");
             }
+        }
 
-            input.value = url;
+        async function handleNavigation(query) {
+            const originalQuery = query.trim();
+            if (!originalQuery) return;
+
+            let url = originalQuery;
+
+            if (!url.includes(".") || url.includes(" ")) {
+                url = (localStorage.getItem("search") || "https://www.google.com/search?q=") +
+                    encodeURIComponent(originalQuery);
+            } else if (!url.startsWith("http")) {
+                url = "https://" + url;
+            }
+
+            loadTarget(url);
+            updateTab(url, originalQuery);
+
+            /*
+             * Keep the input clean. The proxy's encoded URL is stored in
+             * localStorage, but it is never displayed in the search field.
+             */
+            input.value = "";
+            input.placeholder = "Search or enter a URL...";
             input.blur();
         }
 
         function navigateFrameHistory(direction) {
             try {
-                if (scramjetFrame && typeof scramjetFrame.goBack === "function" && direction < 0) {
+                if (scramjetFrame && direction < 0 && typeof scramjetFrame.goBack === "function") {
                     scramjetFrame.goBack();
                     return;
                 }
 
-                if (scramjetFrame && typeof scramjetFrame.goForward === "function" && direction > 0) {
+                if (scramjetFrame && direction > 0 && typeof scramjetFrame.goForward === "function") {
                     scramjetFrame.goForward();
                     return;
                 }
@@ -393,8 +769,36 @@
             }
         }
 
+        function refreshCurrentPage() {
+            refreshButton.style.transform = "rotate(180deg)";
+
+            setTimeout(() => {
+                refreshButton.style.transform = "";
+            }, 350);
+
+            try {
+                if (scramjetFrame && typeof scramjetFrame.reload === "function") {
+                    scramjetFrame.reload();
+                } else if (frameEl.contentWindow) {
+                    frameEl.contentWindow.location.reload();
+                }
+            } catch {
+                frameEl.src = frameEl.src;
+            }
+        }
+
+        function setMode(mode, closeOverlay = true) {
+            document.body.classList.toggle("browser-mode", mode === "browser");
+            document.body.classList.toggle("searcher-mode", mode === "searcher");
+            localStorage.setItem("xylara-mode", mode);
+
+            if (closeOverlay) {
+                modeOverlay.style.display = "none";
+            }
+        }
+
         async function init() {
-            if ('serviceWorker' in navigator) {
+            if ("serviceWorker" in navigator) {
                 try {
                     await navigator.serviceWorker.register("/sw.js");
                     await navigator.serviceWorker.ready;
@@ -435,7 +839,7 @@
                         self.EpoxyTransport.default ||
                         self.EpoxyTransport;
                 } else {
-                    const epoxyModule = await import('/epoxy/index.mjs');
+                    const epoxyModule = await import("/epoxy/index.mjs");
                     EpoxyTransport = epoxyModule.EpoxyTransport || epoxyModule.default;
                 }
 
@@ -456,36 +860,39 @@
                 scramjetFrame = scramjet.createFrame(frameEl);
 
                 const savedUrl = localStorage.getItem("url");
-                const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+                const proxyType = localStorage.getItem("proxy") || "ultraviolet";
 
                 if (savedUrl) {
-                    if (proxyType === 'scramjet' || !savedUrl.startsWith(__uv$config.prefix)) {
-                        const target = savedUrl.startsWith("http")
+                    let target = "";
+
+                    if (proxyType === "scramjet" || !savedUrl.startsWith(__uv$config.prefix)) {
+                        target = savedUrl.startsWith("http")
                             ? savedUrl
                             : "https://example.com";
 
                         scramjetFrame.go(target);
-                        input.value = target;
                     } else {
                         frameEl.src = savedUrl;
-                        input.value = savedUrl;
                     }
+
+                    /*
+                     * Do not put savedUrl or the encoded proxy URL into the
+                     * input. This prevents the strange HTTPS/proxy text from
+                     * appearing when the page opens.
+                     */
+                    input.value = "";
+                    updateTab(target, "New Tab");
                 }
             } catch (error) {
                 console.error("Scramjet init error in search page:", error);
             }
         }
 
-        document.addEventListener("DOMContentLoaded", init);
-
-        input.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                handleNavigation(input.value);
-            }
-        });
-
-        searchSubmit.addEventListener("click", () => {
-            handleNavigation(input.value);
+        toolbarToggle.addEventListener("click", () => {
+            const collapsed = toolbar.classList.toggle("collapsed");
+            toolbarToggle.classList.toggle("collapsed", collapsed);
+            toolbarToggle.title = collapsed ? "Show toolbar" : "Hide toolbar";
+            toolbarToggle.setAttribute("aria-label", collapsed ? "Show toolbar" : "Hide toolbar");
         });
 
         homeButton.addEventListener("click", () => {
@@ -500,23 +907,56 @@
             navigateFrameHistory(1);
         });
 
-        refreshButton.addEventListener("click", () => {
-            refreshButton.style.transform = "rotate(180deg)";
+        refreshButton.addEventListener("click", refreshCurrentPage);
 
-            setTimeout(() => {
-                refreshButton.style.transform = "";
-            }, 350);
-
-            try {
-                if (scramjetFrame && typeof scramjetFrame.reload === "function") {
-                    scramjetFrame.reload();
-                } else {
-                    frameEl.contentWindow.location.reload();
-                }
-            } catch (error) {
-                frameEl.src = frameEl.src;
+        input.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+                handleNavigation(input.value);
             }
         });
+
+        searchSubmit.addEventListener("click", () => {
+            handleNavigation(input.value);
+        });
+
+        newTabButton.addEventListener("click", event => {
+            event.stopPropagation();
+
+            tabs.push({
+                title: "New Tab",
+                url: "",
+                icon: ""
+            });
+
+            activeTab = tabs.length - 1;
+            input.value = "";
+            input.focus();
+            renderTabs();
+        });
+
+        document.querySelectorAll(".mode-option").forEach(option => {
+            option.addEventListener("click", () => {
+                setMode(option.dataset.mode);
+            });
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape" && modeOverlay.style.display !== "none") {
+                modeOverlay.style.display = "none";
+            }
+        });
+
+        const savedMode = localStorage.getItem("xylara-mode") || "browser";
+        setMode(savedMode, false);
+
+        /*
+         * Show the mode chooser whenever this page is opened so users can
+         * switch between Searcher and Browser mode each time.
+         */
+        modeOverlay.style.display = "flex";
+
+        renderTabs();
+        document.addEventListener("DOMContentLoaded", init);
     </script>
 </body>
 </html>
