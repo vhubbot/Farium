@@ -40,7 +40,6 @@
             position: relative;
         }
 
-        /* Dark overlay for readability */
         body::before {
             content: '';
             position: fixed;
@@ -48,6 +47,52 @@
             background: rgba(0, 0, 0, 0.45);
             z-index: 0;
             pointer-events: none;
+        }
+
+        /* ============ TOPBAR ============ */
+        .topbar {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 15, 22, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 5px 10px;
+            backdrop-filter: blur(20px);
+        }
+
+        .topbar a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .topbar a:hover {
+            background: rgba(139,92,246,0.25);
+        }
+
+        .topbar a.active {
+            background: rgba(139,92,246,0.3);
+        }
+
+        .topbar svg {
+            width: 16px;
+            height: 16px;
+            stroke: white;
+            fill: none;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .container {
@@ -120,7 +165,8 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 700;
             transition: all 0.2s;
             font-family: inherit;
             animation: pulse 2.5s infinite;
@@ -334,12 +380,9 @@
             try {
                 await navigator.serviceWorker.ready;
                 const serviceworker = navigator.serviceWorker.controller ?? (await navigator.serviceWorker.ready).active;
-
                 let wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
-
                 const { Controller } = $scramjetController;
                 const { defaultConfig } = $scramjet;
-
                 let EpoxyTransport;
                 if (self.EpoxyTransport) {
                     EpoxyTransport = self.EpoxyTransport.EpoxyTransport || self.EpoxyTransport.default || self.EpoxyTransport;
@@ -347,16 +390,9 @@
                     const epoxyModule = await import('/epoxy/index.mjs');
                     EpoxyTransport = epoxyModule.EpoxyTransport || epoxyModule.default;
                 }
-
                 const transport = new EpoxyTransport({ wisp: wispUrl });
                 await transport.init();
-
-                const scramjet = new Controller({
-                    serviceworker,
-                    transport,
-                    scramjetConfig: defaultConfig
-                });
-
+                const scramjet = new Controller({ serviceworker, transport, scramjetConfig: defaultConfig });
                 await scramjet.wait();
                 window.sj = scramjet;
             } catch (error) {
@@ -378,7 +414,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             init();
-
             const defaultBg = '/assets/backgrounds/foggy-forest.png';
             let bg = localStorage.getItem('bg') || defaultBg;
             document.body.style.backgroundImage = `url('${bg}')`;
@@ -389,12 +424,10 @@
             const searchButton = document.querySelector('.search-button');
             const appButtonsDiv = document.querySelector('.app-buttons');
             const addAppButton = document.getElementById('add-app-button');
-
             const encodeURL = async (url) => {
                 let proxyType = localStorage.getItem('proxy') || 'ultraviolet';
                 proxyType === 'ultraviolet' ? await uvEncode(url) : await sjEncode(url);
             };
-
             const handleSearch = async () => {
                 const query = searchInput ? searchInput.value.trim() : '';
                 if (!query) return;
@@ -403,39 +436,28 @@
                 try {
                     url = (query.startsWith('http://') || query.startsWith('https://')) ? new URL(query) : new URL('https://' + query);
                     if (!url.hostname || !url.hostname.includes('.')) isLikelySearch = true;
-                } catch (e) {
-                    isLikelySearch = true;
-                }
+                } catch (e) { isLikelySearch = true; }
                 if (isLikelySearch) url = new URL((localStorage.getItem('search') || 'https://www.google.com/search?q=') + query);
                 await encodeURL(url.toString());
             };
-
             const createAppButton = (appName, appUrl) => {
                 const appButton = document.createElement('a');
                 appButton.href = '#';
                 appButton.classList.add('app-button');
-                
-                // Try to get favicon
                 try {
                     const domain = new URL(appUrl).hostname;
                     appButton.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" alt="${appName}">`;
                 } catch(e) {
                     appButton.textContent = appName.substring(0, 2).toUpperCase();
                 }
-                
                 appButton.addEventListener('click', (e) => { e.preventDefault(); encodeURL(appUrl); });
                 appButton.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     const index = apps.findIndex(a => a.name === appName);
-                    if (index > -1) {
-                        apps.splice(index, 1);
-                        localStorage.setItem('apps', JSON.stringify(apps));
-                        appButton.remove();
-                    }
+                    if (index > -1) { apps.splice(index, 1); localStorage.setItem('apps', JSON.stringify(apps)); appButton.remove(); }
                 });
                 return appButton;
             };
-
             let apps = JSON.parse(localStorage.getItem('apps') || '[]');
             if (appButtonsDiv && addAppButton) {
                 apps.forEach(app => {
@@ -443,19 +465,13 @@
                     appButtonsDiv.insertBefore(btn, addAppButton);
                 });
             }
-
             const addAppModal = document.getElementById('add-app-modal');
             const addAppSubmit = document.getElementById('add-app-submit');
             const addAppCancel = document.getElementById('add-app-cancel');
             const appNameInput = document.getElementById('app-name');
             const appUrlInput = document.getElementById('app-url');
-
-            if (addAppButton && addAppModal) {
-                addAppButton.addEventListener('click', () => addAppModal.style.display = 'flex');
-            }
-            if (addAppCancel && addAppModal) {
-                addAppCancel.addEventListener('click', () => addAppModal.style.display = 'none');
-            }
+            if (addAppButton && addAppModal) addAppButton.addEventListener('click', () => addAppModal.style.display = 'flex');
+            if (addAppCancel && addAppModal) addAppCancel.addEventListener('click', () => addAppModal.style.display = 'none');
             if (addAppSubmit && addAppModal) {
                 addAppSubmit.addEventListener('click', () => {
                     const name = appNameInput ? appNameInput.value : '';
@@ -464,23 +480,30 @@
                     if (name && url) {
                         apps.push({ name, url });
                         localStorage.setItem('apps', JSON.stringify(apps));
-                        if (appButtonsDiv && addAppButton) {
-                            const btn = createAppButton(name, url);
-                            appButtonsDiv.insertBefore(btn, addAppButton);
-                        }
+                        if (appButtonsDiv && addAppButton) { const btn = createAppButton(name, url); appButtonsDiv.insertBefore(btn, addAppButton); }
                         addAppModal.style.display = 'none';
-                        if (appNameInput) appNameInput.value = ''; 
+                        if (appNameInput) appNameInput.value = '';
                         if (appUrlInput) appUrlInput.value = '';
                     }
                 });
             }
-
             if (searchButton) searchButton.addEventListener('click', handleSearch);
             if (searchInput) searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSearch(); });
         });
     </script>
 </head>
 <body>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <a href="/" class="active" title="Home">
+            <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
+        </a>
+        <a href="/settings" title="Settings">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </a>
+    </div>
+
     <div class="container">
         <div class="logo-text">XYLARA</div>
         <div class="tagline">Browse Freely</div>
