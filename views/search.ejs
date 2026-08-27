@@ -17,36 +17,8 @@
         :root {
             --purple: #8b5cf6;
             --light-purple: #c4b5fd;
-            --panel: rgba(10, 10, 22, 0.78);
-            --border: rgba(255, 255, 255, 0.15);
-            --text-muted: rgba(255, 255, 255, 0.55);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes floatGlow {
-            0%, 100% {
-                transform: translate(-50%, 0) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -18px) scale(1.08);
-            }
-        }
-
-        @keyframes rumble {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-2px); }
-            50% { transform: translateX(2px); }
-            75% { transform: translateX(-1px); }
+            --panel: rgba(10, 10, 22, 0.9);
+            --border: rgba(255, 255, 255, 0.16);
         }
 
         * {
@@ -59,38 +31,8 @@
             height: 100%;
             margin: 0;
             overflow: hidden;
-            background: #080811;
+            background: #000;
             font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            z-index: 5;
-            pointer-events: none;
-            background:
-                linear-gradient(135deg, rgba(5, 5, 14, 0.72), rgba(21, 12, 43, 0.5)),
-                rgba(0, 0, 0, 0.16);
-        }
-
-        body::after {
-            content: "";
-            position: fixed;
-            top: 3%;
-            left: 50%;
-            width: 420px;
-            height: 420px;
-            z-index: 6;
-            pointer-events: none;
-            background: radial-gradient(
-                circle,
-                rgba(139, 92, 246, 0.22),
-                rgba(91, 33, 182, 0.08) 40%,
-                transparent 72%
-            );
-            filter: blur(20px);
-            animation: floatGlow 10s ease-in-out infinite;
         }
 
         iframe {
@@ -111,68 +53,67 @@
             display: flex;
             align-items: center;
             gap: 7px;
+            max-width: calc(100vw - 36px);
             padding: 7px;
             border: 1px solid var(--border);
             border-radius: 18px;
-            background: var(--panel);
+            background:
+                linear-gradient(
+                    120deg,
+                    rgba(255, 255, 255, 0.08),
+                    transparent 45%,
+                    rgba(139, 92, 246, 0.16)
+                ),
+                var(--panel);
             box-shadow:
-                0 16px 40px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+                0 16px 40px rgba(0, 0, 0, 0.45),
+                0 0 28px rgba(139, 92, 246, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            animation: fadeIn 0.5s ease;
-            transition: all 0.25s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
 
-        .toolbar.hidden-search {
-            padding-right: 7px;
+        .toolbar.hidden {
+            display: none;
         }
 
-        .toolbar::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: -1;
-            border-radius: inherit;
-            pointer-events: none;
-            background: linear-gradient(
-                120deg,
-                rgba(255, 255, 255, 0.08),
-                transparent 45%,
-                rgba(139, 92, 246, 0.13)
-            );
-        }
-
-        .control-button {
+        .control-button,
+        .floating-toggle {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
             padding: 0;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
             outline: none;
-            color: rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.86);
+            background: rgba(255, 255, 255, 0.07);
             cursor: pointer;
             transition: all 0.22s ease;
         }
 
-        .control-button:hover {
+        .control-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 11px;
+        }
+
+        .control-button:hover,
+        .floating-toggle:hover {
             color: #fff;
             border-color: var(--light-purple);
-            background: rgba(139, 92, 246, 0.28);
-            box-shadow: 0 0 18px rgba(139, 92, 246, 0.22);
+            background: rgba(139, 92, 246, 0.34);
+            box-shadow: 0 0 18px rgba(139, 92, 246, 0.3);
             transform: translateY(-2px);
         }
 
-        .control-button:active {
-            animation: rumble 0.25s ease;
-            transform: scale(0.93);
+        .control-button:active,
+        .floating-toggle:active {
+            transform: scale(0.92);
         }
 
-        .control-button svg {
+        .control-button svg,
+        .floating-toggle svg {
             width: 17px;
             height: 17px;
             fill: none;
@@ -188,15 +129,15 @@
             width: min(42vw, 390px);
             height: 36px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.13);
+            border: 1px solid rgba(255, 255, 255, 0.14);
             border-radius: 11px;
-            background: rgba(0, 0, 0, 0.24);
-            transition: all 0.25s ease;
+            background: rgba(0, 0, 0, 0.28);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .search-box:focus-within {
             border-color: var(--light-purple);
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
         }
 
         #url-input {
@@ -209,50 +150,64 @@
             color: #fff;
             background: transparent;
             font: inherit;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
         }
 
         #url-input::placeholder {
-            color: rgba(255, 255, 255, 0.42);
+            color: rgba(255, 255, 255, 0.52);
         }
 
         .go-button {
             height: 100%;
-            padding: 0 15px;
+            padding: 0 16px;
             border: none;
             color: #fff;
             background: linear-gradient(135deg, #9b6cff, #7040dc);
             cursor: pointer;
             font: inherit;
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             font-weight: 800;
-            transition: all 0.2s ease;
+            transition: background 0.2s ease;
         }
 
         .go-button:hover {
             background: linear-gradient(135deg, #b39aff, #8555ef);
         }
 
-        .toolbar.search-hidden .search-box,
-        .toolbar.search-hidden .go-button {
-            display: none;
+        .floating-toggle {
+            position: fixed;
+            top: 16px;
+            right: 18px;
+            z-index: 30;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background:
+                linear-gradient(135deg, rgba(155, 108, 255, 0.95), rgba(112, 64, 220, 0.95));
+            box-shadow:
+                0 10px 28px rgba(0, 0, 0, 0.4),
+                0 0 22px rgba(139, 92, 246, 0.4);
+            touch-action: none;
+            user-select: none;
         }
 
-        .toolbar.search-hidden {
-            gap: 6px;
+        .floating-toggle.dragging {
+            cursor: grabbing;
+            transform: scale(1.08);
         }
 
         .status {
             position: fixed;
             right: 18px;
             bottom: 15px;
-            z-index: 20;
+            z-index: 10;
             padding: 8px 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 14px;
-            color: var(--text-muted);
-            background: rgba(10, 10, 20, 0.58);
+            color: rgba(255, 255, 255, 0.55);
+            background: rgba(10, 10, 20, 0.68);
             font-size: 10px;
+            letter-spacing: 1px;
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
         }
@@ -262,7 +217,7 @@
                 top: 12px;
                 left: 12px;
                 right: 12px;
-                width: auto;
+                max-width: none;
             }
 
             .search-box {
@@ -279,9 +234,9 @@
                 padding: 0 11px;
             }
 
-            .status {
-                right: 10px;
-                bottom: 10px;
+            .floating-toggle {
+                top: 12px;
+                right: 12px;
             }
         }
 
@@ -316,15 +271,6 @@
                 display: none;
             }
         }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
     </style>
 </head>
 <body>
@@ -356,17 +302,22 @@
         </button>
 
         <div class="search-box">
-            <input type="text" id="url-input" placeholder="Search or enter a URL..." autocomplete="off">
+            <input
+                type="text"
+                id="url-input"
+                placeholder="Search or enter a URL..."
+                autocomplete="off"
+            >
             <button class="go-button" id="go-button">Go</button>
         </div>
-
-        <button class="control-button" id="toggle-search" title="Hide search bar" aria-label="Hide search bar">
-            <svg id="toggle-icon" viewBox="0 0 24 24">
-                <path d="M4 12h16"></path>
-                <path d="m14 6 6 6-6 6"></path>
-            </svg>
-        </button>
     </div>
+
+    <button class="floating-toggle" id="floating-toggle" title="Show controls" aria-label="Show controls">
+        <svg viewBox="0 0 24 24">
+            <path d="M4 12h16"></path>
+            <path d="m10 6-6 6 6 6"></path>
+        </svg>
+    </button>
 
     <div class="status">XYLARA</div>
 
@@ -376,19 +327,24 @@
         const frameEl = document.getElementById("Frame");
         const input = document.getElementById("url-input");
         const toolbar = document.getElementById("toolbar");
-        const toggleSearchButton = document.getElementById("toggle-search");
-        const toggleIcon = document.getElementById("toggle-icon");
+        const floatingToggle = document.getElementById("floating-toggle");
 
         let scramjetFrame = null;
+        let isDragging = false;
+        let moved = false;
+        let offsetX = 0;
+        let offsetY = 0;
 
         async function handleNavigation(query) {
-            let url = query.trim();
-            if (!url) return;
+            const originalQuery = query.trim();
+            if (!originalQuery) return;
+
+            let url = originalQuery;
 
             if (!url.includes(".") || url.includes(" ")) {
                 url = (localStorage.getItem("search") || "https://www.google.com/search?q=")
-                    + encodeURIComponent(query);
-            } else if (!url.startsWith("http")) {
+                    + encodeURIComponent(originalQuery);
+            } else if (!/^https?:\/\//i.test(url)) {
                 url = "https://" + url;
             }
 
@@ -409,9 +365,9 @@
 
         function frameHistory(action) {
             try {
-                if (scramjetFrame && scramjetFrame.contentWindow) {
-                    scramjetFrame.contentWindow.history[action]();
-                } else if (frameEl.contentWindow) {
+                if (scramjetFrame && typeof scramjetFrame[action] === "function") {
+                    scramjetFrame[action]();
+                } else {
                     frameEl.contentWindow.history[action]();
                 }
             } catch (error) {
@@ -431,20 +387,99 @@
             }
         }
 
+        function showToolbar() {
+            toolbar.classList.remove("hidden");
+            floatingToggle.title = "Hide controls";
+            floatingToggle.setAttribute("aria-label", "Hide controls");
+        }
+
+        function hideToolbar() {
+            toolbar.classList.add("hidden");
+            floatingToggle.title = "Show controls";
+            floatingToggle.setAttribute("aria-label", "Show controls");
+        }
+
+        function toggleToolbar() {
+            if (toolbar.classList.contains("hidden")) {
+                showToolbar();
+            } else {
+                hideToolbar();
+            }
+        }
+
+        function positionToggle(clientX, clientY) {
+            const buttonWidth = floatingToggle.offsetWidth;
+            const buttonHeight = floatingToggle.offsetHeight;
+
+            const left = Math.max(
+                0,
+                Math.min(clientX - offsetX, window.innerWidth - buttonWidth)
+            );
+
+            const top = Math.max(
+                0,
+                Math.min(clientY - offsetY, window.innerHeight - buttonHeight)
+            );
+
+            floatingToggle.style.left = `${left}px`;
+            floatingToggle.style.top = `${top}px`;
+            floatingToggle.style.right = "auto";
+        }
+
+        function startDragging(event) {
+            const rect = floatingToggle.getBoundingClientRect();
+
+            isDragging = true;
+            moved = false;
+            offsetX = event.clientX - rect.left;
+            offsetY = event.clientY - rect.top;
+
+            floatingToggle.classList.add("dragging");
+            floatingToggle.setPointerCapture(event.pointerId);
+        }
+
+        function dragToggle(event) {
+            if (!isDragging) return;
+
+            if (
+                Math.abs(event.clientX - (offsetX + floatingToggle.offsetLeft)) > 3 ||
+                Math.abs(event.clientY - (offsetY + floatingToggle.offsetTop)) > 3
+            ) {
+                moved = true;
+            }
+
+            positionToggle(event.clientX, event.clientY);
+        }
+
+        function stopDragging(event) {
+            if (!isDragging) return;
+
+            isDragging = false;
+            floatingToggle.classList.remove("dragging");
+
+            if (floatingToggle.hasPointerCapture(event.pointerId)) {
+                floatingToggle.releasePointerCapture(event.pointerId);
+            }
+
+            if (!moved) {
+                toggleToolbar();
+            }
+        }
+
         async function init() {
             if ("serviceWorker" in navigator) {
                 try {
                     await navigator.serviceWorker.register("/sw.js");
                     await navigator.serviceWorker.ready;
-                } catch (err) {
-                    console.error("SW Registration error:", err);
+                } catch (error) {
+                    console.error("SW registration error:", error);
                 }
             }
 
             try {
                 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
                 const wispUrl = localStorage.getItem("wisp") ||
-                    ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+                    `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/wisp/`;
                 const transport = localStorage.getItem("transport") || "libcurl";
                 const transportPath = transport === "epoxy"
                     ? "/epoxy/index.mjs"
@@ -453,8 +488,8 @@
                 if (await connection.getTransport() !== transportPath) {
                     await connection.setTransport(transportPath, [{ wisp: wispUrl }]);
                 }
-            } catch (err) {
-                console.error("BareMux init error:", err);
+            } catch (error) {
+                console.error("BareMux init error:", error);
             }
 
             try {
@@ -464,7 +499,7 @@
                     (await navigator.serviceWorker.ready).active;
 
                 const wispUrl = localStorage.getItem("wisp") ||
-                    ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+                    `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/wisp/`;
 
                 let EpoxyTransport;
 
@@ -490,6 +525,7 @@
                 });
 
                 await scramjet.wait();
+
                 window.sj = scramjet;
                 scramjetFrame = scramjet.createFrame(frameEl);
 
@@ -510,22 +546,8 @@
                     }
                 }
             } catch (error) {
-                console.error("Scramjet init error in search page:", error);
+                console.error("Scramjet initialization error:", error);
             }
-        }
-
-        function updateToggleButton() {
-            const hidden = toolbar.classList.contains("search-hidden");
-
-            toggleSearchButton.title = hidden ? "Show search bar" : "Hide search bar";
-            toggleSearchButton.setAttribute(
-                "aria-label",
-                hidden ? "Show search bar" : "Hide search bar"
-            );
-
-            toggleIcon.innerHTML = hidden
-                ? '<path d="M4 12h16"></path><path d="m10 6-6 6 6 6"></path>'
-                : '<path d="M4 12h16"></path><path d="m14 6 6 6-6 6"></path>';
         }
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -556,16 +578,10 @@
                 }
             });
 
-            toggleSearchButton.addEventListener("click", () => {
-                toolbar.classList.toggle("search-hidden");
-                updateToggleButton();
-
-                if (!toolbar.classList.contains("search-hidden")) {
-                    input.focus();
-                }
-            });
-
-            updateToggleButton();
+            floatingToggle.addEventListener("pointerdown", startDragging);
+            floatingToggle.addEventListener("pointermove", dragToggle);
+            floatingToggle.addEventListener("pointerup", stopDragging);
+            floatingToggle.addEventListener("pointercancel", stopDragging);
         });
     </script>
 </body>
