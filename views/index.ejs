@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xylara</title>
+    <title>Farium</title>
     
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
@@ -21,7 +21,7 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         @keyframes rumble { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-2px)} 30%{transform:translateX(2px)} 45%{transform:translateX(-1px)} 60%{transform:translateX(1px)} }
-        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.3)} 50%{box-shadow:0 0 40px rgba(139,92,246,0.5)} }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(225,29,46,0.3)} 50%{box-shadow:0 0 40px rgba(225,29,46,0.5)} }
         @keyframes tabIn { from { opacity: 0; transform: translateY(4px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes browserSlideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes bounceIn { 0%{transform:scale(0.3);opacity:0} 50%{transform:scale(1.05)} 70%{transform:scale(0.95)} 100%{transform:scale(1);opacity:1} }
@@ -81,8 +81,8 @@
             text-decoration: none;
         }
 
-        .topbar a:hover { background: rgba(139,92,246,0.25); }
-        .topbar a.active { background: rgba(139,92,246,0.3); }
+        .topbar a:hover { background: rgba(225,29,46,0.25); }
+        .topbar a.active { background: rgba(225,29,46,0.3); }
         .customize-button {
             display:flex; align-items:center; justify-content:center;
             width:34px; height:34px; border:0; border-radius:10px;
@@ -151,8 +151,8 @@
         }
 
         .search-container:focus-within {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 30px rgba(139,92,246,0.2);
+            border-color: #e11d2e;
+            box-shadow: 0 0 30px rgba(225,29,46,0.2);
         }
 
         .search-input {
@@ -169,7 +169,7 @@
         .search-input::placeholder { color: rgba(255,255,255,0.4); }
 
         .search-button {
-            background: #8b5cf6;
+            background: #e11d2e;
             border: none;
             border-radius: 12px;
             padding: 11px 18px;
@@ -183,7 +183,7 @@
             animation: pulse 2.5s infinite;
         }
 
-        .search-button:hover { background: #a78bfa; transform: translateY(-1px); }
+        .search-button:hover { background: #ff3347; transform: translateY(-1px); }
         .search-button:active { transform: scale(0.94); animation: rumble 0.3s ease; }
 
         .app-buttons {
@@ -214,10 +214,10 @@
         }
 
         .app-button:hover {
-            background: rgba(139,92,246,0.25);
-            border-color: #8b5cf6;
+            background: rgba(225,29,46,0.25);
+            border-color: #e11d2e;
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+            box-shadow: 0 8px 20px rgba(225,29,46,0.3);
         }
 
         .app-button:active { transform: scale(0.88); animation: rumble 0.3s ease; }
@@ -230,8 +230,8 @@
         }
 
         #add-app-button:hover {
-            border-color: #8b5cf6;
-            background: rgba(139,92,246,0.15);
+            border-color: #e11d2e;
+            background: rgba(225,29,46,0.15);
         }
 
         /* BROWSER OVERLAY */
@@ -299,8 +299,8 @@
         }
 
         .browser-address:focus-within {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 20px rgba(139,92,246,0.15);
+            border-color: #e11d2e;
+            box-shadow: 0 0 20px rgba(225,29,46,0.15);
         }
 
         .browser-address input {
@@ -390,7 +390,7 @@
             transition: all 0.2s;
         }
 
-        .new-tab-btn:hover { border-color: #8b5cf6; color: #8b5cf6; background: rgba(139,92,246,0.1); }
+        .new-tab-btn:hover { border-color: #e11d2e; color: #e11d2e; background: rgba(225,29,46,0.1); }
 
         .browser-frame-wrap {
             flex: 1;
@@ -425,7 +425,7 @@
             font-size: 2rem;
             font-weight: 900;
             letter-spacing: 5px;
-            color: #8b5cf6;
+            color: #e11d2e;
             margin-bottom: 4px;
         }
 
@@ -451,10 +451,10 @@
             font-family: inherit;
         }
 
-        .new-tab-search input:focus { border-color: #8b5cf6; }
+        .new-tab-search input:focus { border-color: #e11d2e; }
 
         .new-tab-search button {
-            background: #8b5cf6;
+            background: #e11d2e;
             border: none;
             border-radius: 12px;
             padding: 12px 18px;
@@ -466,7 +466,7 @@
             transition: all 0.2s;
         }
 
-        .new-tab-search button:hover { background: #a78bfa; }
+        .new-tab-search button:hover { background: #ff3347; }
 
         .venusFooter {
             position: fixed;
@@ -484,12 +484,12 @@
             .app-button { width: 42px; height: 42px; border-radius: 12px; }
         }
 
-        /* ===== XYLARA CUSTOMIZATION LAYER =====
+        /* ===== FARIUM CUSTOMIZATION LAYER =====
            This layer only changes presentation/controls. The existing Scramjet,
            Ultraviolet, BareMux, search, tab and navigation code remains intact. */
         :root {
-            --accent: #8b5cf6;
-            --accent-2: #a78bfa;
+            --accent: #e11d2e;
+            --accent-2: #ff3347;
             --surface-alpha: 0.82;
             --shade: 15, 15, 22;
             --scale: 1;
@@ -744,9 +744,38 @@
         body.ui-scaled .main-content { transform: scale(var(--scale)); }
         body.ui-scaled .browser-toolbar, body.ui-scaled .tabs-bar { font-size: calc(1em * var(--scale)); }
 
+
+        /* ===== FARIUM PARTICLES ===== */
+        #particle-canvas { position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; opacity:.7; }
+        .main-content, .topbar, .browser-overlay, .venusFooter, .farium-chat-launch, .chat-overlay { z-index: 10; }
+        body::before { background:linear-gradient(135deg, rgba(0,0,0,.72), rgba(20,0,4,.48)); }
+
+        /* ===== FARIUM CHAT ===== */
+        .farium-chat-launch {
+            position:fixed; right:22px; bottom:22px; display:flex; align-items:center; gap:8px;
+            border:1px solid rgba(255,255,255,.12); border-radius:15px; padding:11px 15px;
+            color:#fff; background:rgba(10,10,12,.78); backdrop-filter:blur(18px); cursor:pointer;
+            box-shadow:0 12px 35px rgba(0,0,0,.35), 0 0 25px rgba(225,29,46,.12); transition:.25s; font:600 12px Inter,sans-serif;
+        }
+        .farium-chat-launch:hover { transform:translateY(-3px); border-color:rgba(225,29,46,.55); background:rgba(35,8,11,.9); }
+        .chat-launch-icon { color:#e11d2e; font-size:13px; animation:chatPulse 1.8s infinite; }
+        @keyframes chatPulse { 50% { opacity:.35; transform:scale(.72); } }
+        .chat-overlay { position:fixed; inset:0; display:flex; align-items:flex-end; justify-content:flex-end; padding:22px; background:rgba(0,0,0,.18); backdrop-filter:blur(2px); opacity:0; visibility:hidden; pointer-events:none; transition:.25s; }
+        .chat-overlay.open { opacity:1; visibility:visible; pointer-events:auto; }
+        .chat-window { width:min(900px, calc(100vw - 30px)); height:min(650px, calc(100vh - 45px)); overflow:hidden; display:flex; flex-direction:column; border:1px solid rgba(255,255,255,.13); border-radius:22px; background:rgba(10,10,12,.96); box-shadow:0 35px 100px rgba(0,0,0,.65), 0 0 50px rgba(225,29,46,.12); backdrop-filter:blur(24px); transform:translateY(25px) scale(.97); transition:.35s cubic-bezier(.2,.8,.2,1); }
+        .chat-overlay.open .chat-window { transform:none; }
+        .chat-header { height:62px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 15px 0 18px; border-bottom:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg,rgba(255,255,255,.035),transparent); }
+        .chat-brand { display:flex; gap:10px; align-items:center; } .chat-brand-mark { width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:#e11d2e;color:#fff;font-weight:900;box-shadow:0 0 20px rgba(225,29,46,.3); } .chat-brand small,.chat-room-head small { display:block;color:#777;font-size:10px;margin-top:2px; }
+        .chat-close { border:0;background:rgba(255,255,255,.06);color:#aaa;border-radius:10px;width:32px;height:32px;font-size:20px;cursor:pointer; } .chat-close:hover{color:#fff;background:rgba(225,29,46,.15)}
+        .chat-auth { width:min(390px,100%); margin:auto; padding:25px; } .chat-auth-title{font-size:25px;font-weight:800}.chat-auth-sub{font-size:12px;color:#777;margin:7px 0 18px}.chat-tabs{display:flex;gap:4px;padding:4px;background:rgba(255,255,255,.05);border-radius:11px;margin-bottom:13px}.chat-auth-tab{flex:1;border:0;background:transparent;color:#777;padding:9px;border-radius:8px;cursor:pointer}.chat-auth-tab.active{background:rgba(225,29,46,.18);color:#fff}.chat-auth form{display:flex;flex-direction:column;gap:10px}.chat-auth input,.chat-search-row input,.chat-compose input{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);color:#fff;outline:none;border-radius:10px;padding:11px;font:inherit}.chat-auth input:focus,.chat-search-row input:focus,.chat-compose input:focus{border-color:#e11d2e;box-shadow:0 0 20px rgba(225,29,46,.12)}.chat-primary,.chat-compose button{border:0;border-radius:10px;background:#e11d2e;color:#fff;padding:11px;font-weight:800;cursor:pointer}.chat-primary:hover,.chat-compose button:hover{background:#ff3347}.chat-error{min-height:15px;color:#ff6876;font-size:11px}.avatar-picker label{display:block;color:#bbb;font-size:11px;margin:4px 0 8px}.avatar-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.avatar-choice{height:45px;border-radius:12px;border:1px solid rgba(255,255,255,.1);cursor:pointer;color:#fff;font-weight:900}.avatar-choice.selected{border-color:#e11d2e;box-shadow:0 0 0 2px rgba(225,29,46,.15)}.avatar-choice[data-avatar="red"]{background:#e11d2e}.avatar-choice[data-avatar="black"]{background:#111}.avatar-choice[data-avatar="white"]{background:#eee;color:#111}.avatar-choice[data-avatar="crimson"]{background:linear-gradient(135deg,#4a050b,#e11d2e)}.avatar-choice[data-avatar="ember"]{background:linear-gradient(135deg,#211,#c22)}.avatar-choice[data-avatar="mono"]{background:linear-gradient(135deg,#222,#888)}
+        .chat-app{display:grid;grid-template-columns:250px 1fr;min-height:0;flex:1}.chat-sidebar{border-right:1px solid rgba(255,255,255,.08);padding:12px;display:flex;flex-direction:column;min-width:0}.chat-me{padding:10px;border-radius:12px;background:rgba(255,255,255,.04);margin-bottom:9px}.chat-user-card{display:flex;align-items:center;gap:8px;padding:8px;border-radius:9px}.chat-user-card:hover{background:rgba(255,255,255,.05)}.chat-avatar{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:900;color:#fff;flex:none}.chat-search-row{display:flex;gap:5px}.chat-search-row input{width:100%;padding:8px}.chat-search-row button{width:34px;border:0;border-radius:9px;background:rgba(255,255,255,.07);color:#fff;cursor:pointer}.chat-section-title{font-size:9px;text-transform:uppercase;letter-spacing:1.4px;color:#666;margin:15px 5px 7px}.chat-friends,.chat-results{overflow:auto}.friend-add{margin-left:auto;border:0;border-radius:7px;background:rgba(225,29,46,.12);color:#ff6572;padding:5px 7px;cursor:pointer}.chat-logout{margin-top:auto;border:1px solid rgba(255,255,255,.08);background:transparent;color:#888;border-radius:9px;padding:8px;cursor:pointer}.chat-logout:hover{color:#fff;background:rgba(255,255,255,.05)}
+        .chat-main{min-width:0;display:flex;flex-direction:column}.chat-room-head{height:56px;flex:none;padding:0 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07)}.online-dot{width:8px;height:8px;border-radius:50%;background:#e11d2e;box-shadow:0 0 10px rgba(225,29,46,.8)}.chat-messages{flex:1;overflow:auto;padding:16px}.chat-message{display:flex;gap:9px;margin-bottom:13px;animation:chatMessageIn .2s ease}.chat-message .chat-avatar{width:32px;height:32px}.chat-message-body{min-width:0}.chat-message-name{font-size:11px;font-weight:800}.chat-message-time{font-size:8px;color:#555;margin-left:6px}.chat-message-text{margin-top:3px;color:#ddd;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word}.chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.07)}.chat-compose input{flex:1}.chat-compose button{padding:0 17px}@keyframes chatMessageIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+        @media(max-width:700px){.chat-overlay{padding:8px}.chat-window{width:100%;height:calc(100vh - 16px);border-radius:18px}.chat-app{grid-template-columns:1fr}.chat-sidebar{display:none}.farium-chat-launch{right:14px;bottom:14px}.chat-compose button{padding:0 12px}}
+
     </style>
 </head>
 <body>
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
 
     <!-- TOPBAR -->
     <div class="topbar">
@@ -764,21 +793,21 @@
 
     <!-- CUSTOMIZATION MENU (presentation only; proxy/search code is untouched) -->
     <div class="customizer-backdrop" id="customizer-backdrop">
-        <section class="customizer" role="dialog" aria-label="Xylara customization">
+        <section class="customizer" role="dialog" aria-label="Farium customization">
             <div class="customizer-header">
                 <div>
-                    <div class="customizer-title">Customize Xylara</div>
+                    <div class="customizer-title">Customize Farium</div>
                     <div class="customizer-subtitle">Colors, shades, shaders and UI scale</div>
                 </div>
                 <button class="customizer-close" id="customizer-close" aria-label="Close settings">×</button>
             </div>
 
             <div class="setting-group">
-                <div class="setting-label"><span>Accent color</span><span class="setting-value" id="accent-value">#8b5cf6</span></div>
+                <div class="setting-label"><span>Accent color</span><span class="setting-value" id="accent-value">#e11d2e</span></div>
                 <div class="color-row">
-                    <input type="color" id="accent-color" value="#8b5cf6">
+                    <input type="color" id="accent-color" value="#e11d2e">
                     <div class="preset-row" id="accent-presets">
-                        <button class="preset" data-color="#8b5cf6" style="background:#8b5cf6" aria-label="Purple"></button>
+                        <button class="preset" data-color="#e11d2e" style="background:#e11d2e" aria-label="Purple"></button>
                         <button class="preset" data-color="#06b6d4" style="background:#06b6d4" aria-label="Cyan"></button>
                         <button class="preset" data-color="#3b82f6" style="background:#3b82f6" aria-label="Blue"></button>
                         <button class="preset" data-color="#22c55e" style="background:#22c55e" aria-label="Green"></button>
@@ -825,7 +854,7 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-content" id="main-content">
-        <div class="logo-text">XYLARA</div>
+        <div class="logo-text">FARIUM</div>
         <div class="tagline">Browse Freely</div>
         <div class="search-container">
             <input type="text" class="search-input" id="search-input" placeholder="Search or enter a URL..." autocomplete="off">
@@ -862,7 +891,7 @@
             <button id="browser-refresh" title="Refresh">
                 <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
             </button>
-            <button id="browser-home" title="Home" style="color: #8b5cf6;">
+            <button id="browser-home" title="Home" style="color: #e11d2e;">
                 <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
             </button>
             <div class="browser-address">
@@ -881,12 +910,64 @@
         <div class="browser-frame-wrap">
             <iframe id="browser-frame" src="" referrerpolicy="no-referrer"></iframe>
             <div class="new-tab-page" id="new-tab-page">
-                <div class="new-tab-logo">XYLARA</div>
+                <div class="new-tab-logo">FARIUM</div>
                 <div class="new-tab-sub">Browse Freely</div>
                 <div class="new-tab-search">
                     <input type="text" id="new-tab-search-input" placeholder="Search or enter URL..." autocomplete="off">
                     <button id="new-tab-search-btn">Go</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <button class="farium-chat-launch" id="farium-chat-launch" title="Open Farium Chat" aria-label="Open Farium Chat">
+        <span class="chat-launch-icon">●</span><span>Chat</span>
+    </button>
+
+    <div class="chat-overlay" id="chat-overlay" aria-hidden="true">
+        <div class="chat-window" role="dialog" aria-label="Farium Chat">
+            <header class="chat-header">
+                <div class="chat-brand"><div class="chat-brand-mark">F</div><div><strong>Farium Chat</strong><small>Community</small></div></div>
+                <button class="chat-close" id="chat-close" aria-label="Close chat">×</button>
+            </header>
+            <div class="chat-auth" id="chat-auth">
+                <div class="chat-auth-title">Welcome to Farium</div>
+                <div class="chat-auth-sub">Create an account or sign in to chat.</div>
+                <div class="chat-tabs"><button class="chat-auth-tab active" data-mode="login">Sign in</button><button class="chat-auth-tab" data-mode="register">Sign up</button></div>
+                <form id="chat-auth-form">
+                    <input id="chat-username" maxlength="20" placeholder="Username" autocomplete="username" required>
+                    <input id="chat-password" type="password" minlength="6" maxlength="128" placeholder="Password" autocomplete="current-password" required>
+                    <div class="avatar-picker" id="avatar-picker" hidden>
+                        <label>Choose your profile picture</label>
+                        <div class="avatar-grid">
+                            <button type="button" class="avatar-choice selected" data-avatar="red"><span>F</span></button>
+                            <button type="button" class="avatar-choice" data-avatar="black"><span>F</span></button>
+                            <button type="button" class="avatar-choice" data-avatar="white"><span>F</span></button>
+                            <button type="button" class="avatar-choice" data-avatar="crimson"><span>✦</span></button>
+                            <button type="button" class="avatar-choice" data-avatar="ember"><span>◆</span></button>
+                            <button type="button" class="avatar-choice" data-avatar="mono"><span>●</span></button>
+                        </div>
+                    </div>
+                    <button class="chat-primary" type="submit" id="chat-auth-submit">Sign in</button>
+                    <div class="chat-error" id="chat-auth-error"></div>
+                </form>
+            </div>
+            <div class="chat-app" id="chat-app" hidden>
+                <aside class="chat-sidebar">
+                    <div class="chat-me" id="chat-me"></div>
+                    <div class="chat-search-row"><input id="chat-user-search" placeholder="Search people..."><button id="chat-user-search-btn">⌕</button></div>
+                    <div class="chat-section-title">Friends</div>
+                    <div id="chat-friends" class="chat-friends"></div>
+                    <div class="chat-section-title">Search results</div>
+                    <div id="chat-results" class="chat-results"></div>
+                    <button class="chat-logout" id="chat-logout">Sign out</button>
+                </aside>
+                <main class="chat-main">
+                    <div class="chat-room-head"><div><strong>Farium Lounge</strong><small>Talk with the community</small></div><span class="online-dot"></span></div>
+                    <div class="chat-messages" id="chat-messages"></div>
+                    <form class="chat-compose" id="chat-compose"><input id="chat-message-input" maxlength="1000" placeholder="Message Farium Lounge..." autocomplete="off"><button type="submit">Send</button></form>
+                </main>
             </div>
         </div>
     </div>
@@ -1077,7 +1158,7 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initProxy();
-            const defaultBg = '/foggy-forest.png';
+            const defaultBg = '/assets/backgrounds/foggy-forest.png';
             document.body.style.backgroundImage = `url('${localStorage.getItem('bg') || defaultBg}')`;
 
             // Main search
@@ -1194,7 +1275,7 @@
                 }
 
                 if (save) {
-                    localStorage.setItem('xylaraAppearance', JSON.stringify({
+                    localStorage.setItem('fariumAppearance', JSON.stringify({
                         accent, shade: shadeRange.value, glow: glowRange.value,
                         scale: scaleRange.value, shader: shaderRange.value, shaderStyle: style
                     }));
@@ -1203,9 +1284,9 @@
 
             function loadAppearance() {
                 try {
-                    const saved = JSON.parse(localStorage.getItem('xylaraAppearance') || 'null');
+                    const saved = JSON.parse(localStorage.getItem('fariumAppearance') || 'null');
                     if (saved) {
-                        accentInput.value = saved.accent || '#8b5cf6';
+                        accentInput.value = saved.accent || '#e11d2e';
                         shadeRange.value = saved.shade || 82;
                         glowRange.value = saved.glow || 22;
                         scaleRange.value = saved.scale || 100;
@@ -1243,13 +1324,13 @@
             });
 
             document.getElementById('reset-settings').addEventListener('click', () => {
-                accentInput.value = '#8b5cf6';
+                accentInput.value = '#e11d2e';
                 shadeRange.value = 82;
                 glowRange.value = 22;
                 scaleRange.value = 100;
                 shaderRange.value = 0;
                 shaderStyle.value = 'aurora';
-                localStorage.removeItem('xylaraAppearance');
+                localStorage.removeItem('fariumAppearance');
                 applyAppearance(false);
             });
 
@@ -1271,6 +1352,43 @@
                 document.getElementById('app-buttons').insertBefore(btn, document.getElementById('add-app-button'));
             });
         });
+
+        // ===== Farium particles: user-configurable from Settings =====
+        const particleCanvas = document.getElementById('particle-canvas');
+        const particleCtx = particleCanvas.getContext('2d');
+        let particleMode = localStorage.getItem('fariumParticles') || 'embers';
+        let particleCount = Number(localStorage.getItem('fariumParticleCount') || 55);
+        let particles = [];
+        function particleColor() { return localStorage.getItem('fariumParticleColor') || '#e11d2e'; }
+        function resizeParticles(){ particleCanvas.width=innerWidth*devicePixelRatio; particleCanvas.height=innerHeight*devicePixelRatio; particleCanvas.style.width=innerWidth+'px'; particleCanvas.style.height=innerHeight+'px'; particleCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+        function resetParticles(){ particles=[]; if(particleMode==='off') return; const n=Math.max(0,Math.min(180,particleCount)); for(let i=0;i<n;i++) particles.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2+.5,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.35,a:Math.random()*.6+.15}); }
+        function drawParticles(){ particleCtx.clearRect(0,0,innerWidth,innerHeight); if(particleMode==='off'){requestAnimationFrame(drawParticles);return;} const c=particleColor(); for(const p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<-10)p.x=innerWidth+10;if(p.x>innerWidth+10)p.x=-10;if(p.y<-10)p.y=innerHeight+10;if(p.y>innerHeight+10)p.y=-10; particleCtx.globalAlpha=p.a; particleCtx.fillStyle=c; if(particleMode==='stars'){particleCtx.beginPath();particleCtx.arc(p.x,p.y,p.r*.65,0,Math.PI*2);particleCtx.fill();}else if(particleMode==='bubbles'){particleCtx.strokeStyle=c;particleCtx.lineWidth=1;particleCtx.beginPath();particleCtx.arc(p.x,p.y,p.r*2.2,0,Math.PI*2);particleCtx.stroke();}else{particleCtx.beginPath();particleCtx.arc(p.x,p.y,p.r,0,Math.PI*2);particleCtx.fill();}} particleCtx.globalAlpha=1; requestAnimationFrame(drawParticles); }
+        addEventListener('resize',()=>{resizeParticles();resetParticles()}); resizeParticles(); resetParticles(); drawParticles();
+
+        // ===== Farium Chat =====
+        const chatOverlay=document.getElementById('chat-overlay'), chatLaunch=document.getElementById('farium-chat-launch'), chatClose=document.getElementById('chat-close');
+        const chatAuth=document.getElementById('chat-auth'), chatApp=document.getElementById('chat-app'), authForm=document.getElementById('chat-auth-form');
+        let authMode='login', currentUser=null, selectedAvatar='red', lastMessageTime=0;
+        const avatarMap={red:'#e11d2e',black:'#111111',white:'#eeeeee',crimson:'linear-gradient(135deg,#4a050b,#e11d2e)',ember:'linear-gradient(135deg,#211,#c22)',mono:'linear-gradient(135deg,#222,#888)'};
+        function avatarEl(u,small=false){const d=document.createElement('div');d.className='chat-avatar';d.style.background=avatarMap[u.avatar]||'#e11d2e';d.style.color=u.avatar==='white'?'#111':'#fff';d.textContent=(u.username||'F')[0].toUpperCase();if(small)d.style.width=d.style.height='26px';return d;}
+        function openChat(){chatOverlay.classList.add('open');chatOverlay.setAttribute('aria-hidden','false');checkMe();}
+        function closeChat(){chatOverlay.classList.remove('open');chatOverlay.setAttribute('aria-hidden','true');}
+        chatLaunch.addEventListener('click',openChat); if(location.hash==='#chat') openChat(); chatClose.addEventListener('click',closeChat); chatOverlay.addEventListener('click',e=>{if(e.target===chatOverlay)closeChat()});
+        document.querySelectorAll('.chat-auth-tab').forEach(b=>b.addEventListener('click',()=>{authMode=b.dataset.mode;document.querySelectorAll('.chat-auth-tab').forEach(x=>x.classList.toggle('active',x===b));document.getElementById('chat-auth-submit').textContent=authMode==='login'?'Sign in':'Create account';document.getElementById('avatar-picker').hidden=authMode!=='register';document.getElementById('chat-password').autocomplete=authMode==='login'?'current-password':'new-password';}));
+        document.querySelectorAll('.avatar-choice').forEach(b=>b.addEventListener('click',()=>{selectedAvatar=b.dataset.avatar;document.querySelectorAll('.avatar-choice').forEach(x=>x.classList.toggle('selected',x===b));}));
+        async function api(url,opts={}){const r=await fetch(url,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(opts.headers||{})},...opts});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'Request failed');return j;}
+        async function checkMe(){try{const j=await api('/api/auth/me');currentUser=j.user;if(currentUser){chatAuth.hidden=true;chatApp.hidden=false;renderMe();renderFriends();loadMessages(true);}else{chatAuth.hidden=false;chatApp.hidden=true;}}catch(e){chatAuth.hidden=false;chatApp.hidden=true;}}
+        function renderMe(){const el=document.getElementById('chat-me');el.replaceChildren(avatarEl(currentUser));const wrap=document.createElement('div');wrap.style.display='inline-block';wrap.style.verticalAlign='top';wrap.style.marginLeft='8px';wrap.innerHTML=`<strong style="font-size:11px">${escapeHtml(currentUser.username)}</strong><small style="display:block;color:#666;font-size:9px">Signed in</small>`;el.appendChild(wrap);}
+        function renderFriends(){const box=document.getElementById('chat-friends');box.innerHTML='';(currentUser.friends||[]).forEach(id=>{const d=document.createElement('div');d.className='chat-user-card';d.textContent='Friend';box.appendChild(d);});}
+        function renderMessages(msgs){const box=document.getElementById('chat-messages');for(const m of msgs){if(box.querySelector(`[data-message-id="${m.id}"]`))continue;const row=document.createElement('div');row.className='chat-message';row.dataset.messageId=m.id;row.appendChild(avatarEl(m));const body=document.createElement('div');body.className='chat-message-body';const dt=new Date(m.createdAt).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});body.innerHTML=`<div><span class="chat-message-name">${escapeHtml(m.username)}</span><span class="chat-message-time">${dt}</span></div><div class="chat-message-text">${escapeHtml(m.text)}</div>`;row.appendChild(body);box.appendChild(row);lastMessageTime=Math.max(lastMessageTime,m.createdAt);}box.scrollTop=box.scrollHeight;}
+        async function loadMessages(initial=false){try{const j=await api('/api/chat/messages?since='+(initial?0:lastMessageTime));renderMessages(j.messages);}catch(e){}}
+        authForm.addEventListener('submit',async e=>{e.preventDefault();const err=document.getElementById('chat-auth-error');err.textContent='';try{const body={username:document.getElementById('chat-username').value,password:document.getElementById('chat-password').value,avatar:selectedAvatar};const j=await api(authMode==='login'?'/api/auth/login':'/api/auth/register',{method:'POST',body:JSON.stringify(body)});currentUser=j.user;authForm.reset();chatAuth.hidden=true;chatApp.hidden=false;renderMe();renderFriends();loadMessages(true);}catch(x){err.textContent=x.message;}});
+        document.getElementById('chat-compose').addEventListener('submit',async e=>{e.preventDefault();const input=document.getElementById('chat-message-input');const text=input.value.trim();if(!text)return;try{const j=await api('/api/chat/messages',{method:'POST',body:JSON.stringify({text})});input.value='';renderMessages([j.message]);}catch(x){alert(x.message);}});
+        document.getElementById('chat-logout').addEventListener('click',async()=>{await api('/api/auth/logout',{method:'POST'});currentUser=null;lastMessageTime=0;document.getElementById('chat-messages').innerHTML='';chatAuth.hidden=false;chatApp.hidden=true;});
+        async function searchUsers(){const q=document.getElementById('chat-user-search').value.trim();if(!q)return;try{const j=await api('/api/users/search?q='+encodeURIComponent(q));const box=document.getElementById('chat-results');box.innerHTML='';j.users.forEach(u=>{const d=document.createElement('div');d.className='chat-user-card';d.appendChild(avatarEl(u,true));const n=document.createElement('span');n.textContent=u.username;n.style.fontSize='11px';d.appendChild(n);const b=document.createElement('button');b.className='friend-add';b.textContent='+';b.onclick=async()=>{try{const r=await api('/api/friends/add',{method:'POST',body:JSON.stringify({username:u.username})});currentUser=r.user;renderMe();renderFriends();b.textContent='✓';}catch(e){b.textContent='!';}};d.appendChild(b);box.appendChild(d);});}catch(e){}}
+        document.getElementById('chat-user-search-btn').addEventListener('click',searchUsers);document.getElementById('chat-user-search').addEventListener('keydown',e=>{if(e.key==='Enter')searchUsers();});
+        setInterval(()=>{if(currentUser&&chatOverlay.classList.contains('open'))loadMessages(false)},1800);
+
     </script>
 </body>
 </html>
