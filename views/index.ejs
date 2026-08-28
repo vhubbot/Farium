@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xylara</title>
-
+    
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
     <script src="/epoxy/index.js"></script>
@@ -14,595 +14,313 @@
 
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-        :root {
-            --purple: #8b5cf6;
-            --light-purple: #c4b5fd;
-            --surface: rgba(15, 15, 26, 0.7);
-            --border: rgba(255, 255, 255, 0.14);
-            --muted: rgba(255, 255, 255, 0.52);
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes rumble { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-2px)} 30%{transform:translateX(2px)} 45%{transform:translateX(-1px)} 60%{transform:translateX(1px)} }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.3)} 50%{box-shadow:0 0 40px rgba(139,92,246,0.5)} }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(28px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            50% {
-                transform: translate(25px, -20px) scale(1.08);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 0 18px rgba(139, 92, 246, 0.25);
-            }
-            50% {
-                box-shadow: 0 0 34px rgba(139, 92, 246, 0.5);
-            }
-        }
-
-        @keyframes rumble {
-            0%, 100% { transform: translateX(0); }
-            15% { transform: translateX(-2px); }
-            30% { transform: translateX(2px); }
-            45% { transform: translateX(-1px); }
-            60% { transform: translateX(1px); }
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            min-height: 100%;
-            background: #080811;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            min-height: 100vh;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
-            color: white;
-            background-color: #080811;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             position: relative;
+            overflow: hidden;
         }
 
         body::before {
             content: '';
             position: fixed;
             inset: 0;
+            background: rgba(0, 0, 0, 0.45);
             z-index: 0;
             pointer-events: none;
-            background:
-                linear-gradient(135deg, rgba(5, 5, 14, 0.88), rgba(21, 12, 43, 0.7)),
-                rgba(0, 0, 0, 0.25);
         }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: 8%;
-            left: 50%;
-            width: 480px;
-            height: 480px;
-            z-index: 0;
-            pointer-events: none;
-            transform: translateX(-50%);
-            background: radial-gradient(
-                circle,
-                rgba(139, 92, 246, 0.25) 0%,
-                rgba(91, 33, 182, 0.1) 38%,
-                transparent 72%
-            );
-            filter: blur(18px);
-            animation: float 11s ease-in-out infinite;
-        }
-
-        /* TOPBAR */
 
         .topbar {
             position: fixed;
-            top: 18px;
+            top: 10px;
             left: 50%;
-            z-index: 1000;
+            transform: translateX(-50%);
+            z-index: 100;
             display: flex;
             align-items: center;
-            gap: 7px;
-            padding: 6px;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            background: rgba(10, 10, 20, 0.7);
-            box-shadow:
-                0 14px 38px rgba(0, 0, 0, 0.35),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            transform: translateX(-50%);
-            animation: fadeIn 0.5s ease;
-        }
-
-        .topbar::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            pointer-events: none;
-            background: linear-gradient(
-                120deg,
-                rgba(255, 255, 255, 0.08),
-                transparent 42%,
-                rgba(139, 92, 246, 0.12)
-            );
+            gap: 6px;
+            background: rgba(15, 15, 22, 0.85);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 5px 10px;
+            backdrop-filter: blur(20px);
+            animation: fadeIn 0.4s ease;
         }
 
         .topbar a {
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 38px;
-            border-radius: 12px;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            transition: all 0.2s;
             text-decoration: none;
-            transition: all 0.25s ease;
         }
 
-        .topbar a:hover {
-            background: rgba(139, 92, 246, 0.23);
-            transform: translateY(-2px);
-        }
-
-        .topbar a.active {
-            background: linear-gradient(
-                135deg,
-                rgba(139, 92, 246, 0.5),
-                rgba(109, 40, 217, 0.25)
-            );
-            box-shadow:
-                0 6px 18px rgba(139, 92, 246, 0.22),
-                inset 0 1px 0 rgba(255, 255, 255, 0.16);
-        }
-
-        .topbar a:active {
-            animation: rumble 0.3s ease;
-        }
+        .topbar a:hover { background: rgba(139,92,246,0.25); }
+        .topbar a.active { background: rgba(139,92,246,0.3); }
+        .topbar a:active { animation: rumble 0.3s ease; }
 
         .topbar svg {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
+            stroke: white;
             fill: none;
-            stroke: rgba(255, 255, 255, 0.82);
             stroke-width: 1.7;
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: all 0.25s ease;
         }
 
-        .topbar a:hover svg,
-        .topbar a.active svg {
-            stroke: white;
-            filter: drop-shadow(0 0 7px rgba(196, 181, 253, 0.85));
-        }
-
-        /* MAIN CONTENT */
-
-        .container {
+        .main-content {
             position: relative;
             z-index: 1;
-            width: min(100% - 32px, 620px);
             text-align: center;
-            animation: fadeIn 0.7s ease;
+            animation: fadeIn 0.6s ease;
+            width: 100%;
+            max-width: 650px;
+            padding: 0 20px;
         }
 
         .logo-text {
-            margin-bottom: 7px;
-            color: #fff;
-            font-size: clamp(2.2rem, 8vw, 3.3rem);
+            font-size: 2.5rem;
             font-weight: 900;
-            letter-spacing: clamp(4px, 1.5vw, 8px);
-            line-height: 1;
-            text-shadow:
-                0 3px 25px rgba(0, 0, 0, 0.6),
-                0 0 35px rgba(139, 92, 246, 0.2);
+            letter-spacing: 6px;
+            color: #fff;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
         }
 
         .tagline {
-            margin-bottom: 30px;
-            color: rgba(255, 255, 255, 0.58);
-            font-size: 0.72rem;
-            font-weight: 600;
-            letter-spacing: 4px;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 3px;
             text-transform: uppercase;
+            margin-bottom: 28px;
+            font-weight: 500;
         }
 
         .search-container {
             display: flex;
             align-items: center;
-            width: 100%;
-            max-width: 560px;
+            max-width: 520px;
             margin: 0 auto;
+            background: rgba(15, 15, 22, 0.8);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
             padding: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 18px;
-            background: rgba(12, 12, 23, 0.76);
-            box-shadow:
-                0 18px 45px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            transition: all 0.3s ease;
-            animation: slideUp 0.65s ease;
+            backdrop-filter: blur(20px);
+            animation: slideUp 0.6s ease;
+            transition: all 0.3s;
         }
 
         .search-container:focus-within {
-            border-color: rgba(167, 139, 250, 0.85);
-            box-shadow:
-                0 18px 45px rgba(0, 0, 0, 0.3),
-                0 0 32px rgba(139, 92, 246, 0.22),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-color: #8b5cf6;
+            box-shadow: 0 0 30px rgba(139,92,246,0.2);
         }
 
         .search-input {
             flex: 1;
-            min-width: 0;
-            padding: 14px 18px;
             border: none;
-            outline: none;
-            color: white;
-            background: transparent;
-            font: inherit;
+            padding: 13px 18px;
             font-size: 0.9rem;
+            outline: none;
+            background: transparent;
+            color: #fff;
+            font-family: inherit;
         }
 
-        .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
+        .search-input::placeholder { color: rgba(255,255,255,0.4); }
 
         .search-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 21px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 13px;
+            background: #8b5cf6;
+            border: none;
+            border-radius: 12px;
+            padding: 11px 18px;
+            cursor: pointer;
             outline: none;
             color: white;
-            background: linear-gradient(135deg, #9b6cff, #7040dc);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-            font: inherit;
-            font-size: 0.86rem;
-            font-weight: 800;
-            transition: all 0.25s ease;
-            animation: pulse 2.8s infinite;
+            font-size: 15px;
+            font-weight: 700;
+            transition: all 0.2s;
+            font-family: inherit;
+            animation: pulse 2.5s infinite;
         }
 
-        .search-button:hover {
-            background: linear-gradient(135deg, #b39aff, #8555ef);
-            transform: translateY(-2px);
-            box-shadow:
-                0 8px 24px rgba(139, 92, 246, 0.35),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25);
-        }
-
-        .search-button:active {
-            transform: scale(0.95);
-            animation: rumble 0.3s ease;
-        }
-
-        /* APP SHORTCUTS */
+        .search-button:hover { background: #a78bfa; transform: translateY(-1px); }
+        .search-button:active { transform: scale(0.94); animation: rumble 0.3s ease; }
 
         .app-buttons {
             display: flex;
             justify-content: center;
+            margin-top: 22px;
+            gap: 10px;
             flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 24px;
-            animation: slideUp 0.65s ease 0.12s both;
+            animation: slideUp 0.6s ease 0.15s both;
         }
 
         .app-button {
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 52px;
-            height: 52px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            border-radius: 16px;
-            outline: none;
-            color: white;
-            background: rgba(13, 13, 24, 0.7);
-            box-shadow:
-                0 9px 22px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(15, 15, 22, 0.7);
+            backdrop-filter: blur(15px);
             cursor: pointer;
+            outline: none;
+            border: 1px solid rgba(255,255,255,0.12);
+            color: white;
             text-decoration: none;
-            transition: all 0.28s ease;
-        }
-
-        .app-button::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            background: linear-gradient(
-                135deg,
-                rgba(139, 92, 246, 0.3),
-                transparent 65%
-            );
-            transition: opacity 0.28s ease;
+            transition: all 0.25s;
+            overflow: hidden;
         }
 
         .app-button:hover {
-            border-color: rgba(167, 139, 250, 0.8);
-            background: rgba(139, 92, 246, 0.2);
-            transform: translateY(-5px);
-            box-shadow:
-                0 13px 26px rgba(0, 0, 0, 0.28),
-                0 8px 25px rgba(139, 92, 246, 0.25);
+            background: rgba(139,92,246,0.25);
+            border-color: #8b5cf6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139,92,246,0.3);
         }
 
-        .app-button:hover::before {
-            opacity: 1;
-        }
-
-        .app-button:active {
-            transform: scale(0.9);
-            animation: rumble 0.3s ease;
-        }
-
-        .app-button img {
-            position: relative;
-            z-index: 1;
-            width: 25px;
-            height: 25px;
-            object-fit: contain;
-            opacity: 0.86;
-            transition: all 0.25s ease;
-        }
-
-        .app-button:hover img {
-            opacity: 1;
-            transform: scale(1.08);
-        }
+        .app-button:active { transform: scale(0.88); animation: rumble 0.3s ease; }
+        .app-button img { width: 24px; height: 24px; object-fit: contain; opacity: 0.85; }
+        .app-button:hover img { opacity: 1; }
 
         #add-app-button {
-            border: 1.5px dashed rgba(255, 255, 255, 0.25);
-            background: rgba(15, 15, 22, 0.58);
+            background: rgba(15, 15, 22, 0.7);
+            border: 1.5px dashed rgba(255,255,255,0.2);
         }
 
         #add-app-button:hover {
-            border-color: var(--light-purple);
-            background: rgba(139, 92, 246, 0.18);
+            border-color: #8b5cf6;
+            background: rgba(139,92,246,0.15);
         }
 
-        /* ADD APP MODAL */
-
-        #add-app-modal {
-            z-index: 2000;
-            padding: 20px;
+        /* BROWSER OVERLAY */
+        .browser-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            background: #0a0a0f;
         }
 
-        #add-app-modal > div {
-            width: min(100%, 360px);
-            padding: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 22px;
-            background:
-                linear-gradient(145deg, rgba(38, 28, 65, 0.92), rgba(13, 13, 25, 0.94));
-            box-shadow:
-                0 24px 70px rgba(0, 0, 0, 0.55),
-                0 0 35px rgba(139, 92, 246, 0.18),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+        .browser-overlay.open { display: flex; }
+
+        .browser-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            background: #0d0d14;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
         }
 
-        #add-app-modal h3 {
-            font-size: 1.2rem;
-            letter-spacing: -0.3px;
-        }
-
-        #add-app-modal input {
-            width: 100%;
-            padding: 11px 13px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            outline: none;
-            color: white;
-            background: rgba(255, 255, 255, 0.08);
-            font: inherit;
-            font-size: 0.82rem;
-            transition: all 0.2s ease;
-        }
-
-        #add-app-modal input:focus {
-            border-color: var(--light-purple);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.14);
-        }
-
-        #add-app-modal input::placeholder {
-            color: rgba(255, 255, 255, 0.35);
-        }
-
-        #add-app-modal button {
-            padding: 10px 17px;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: 10px;
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
+        .browser-toolbar button {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #8a8a92;
             cursor: pointer;
-            font: inherit;
-            font-size: 0.78rem;
-            font-weight: 700;
-            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
 
-        #add-app-modal #add-app-submit {
-            background: linear-gradient(135deg, #9b6cff, #7040dc);
+        .browser-toolbar button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .browser-toolbar button:active { animation: rumble 0.3s ease; }
+
+        .browser-toolbar svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        #add-app-modal button:hover {
-            border-color: var(--light-purple);
-            transform: translateY(-2px);
+        .browser-address {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 0 14px;
+            height: 32px;
+            transition: all 0.2s;
         }
 
-        /* FOOTER CONTROLS */
+        .browser-address:focus-within {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 20px rgba(139,92,246,0.15);
+        }
+
+        .browser-address input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e8e8f0;
+            font-size: 12px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .browser-frame-wrap {
+            flex: 1;
+            position: relative;
+            background: #fff;
+        }
+
+        .browser-frame-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
 
         .venusFooter {
             position: fixed;
+            bottom: 10px;
             right: 20px;
-            bottom: 14px;
-            z-index: 10;
-            color: rgba(255, 255, 255, 0.42);
+            color: rgba(255,255,255,0.5);
             font-size: 10px;
             text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .venusFooter:hover {
-            color: var(--light-purple);
-        }
-
-        .reset-button {
-            position: fixed;
-            bottom: 16px;
-            left: 50%;
             z-index: 10;
-            padding: 9px 17px;
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            border-radius: 22px;
-            outline: none;
-            color: rgba(255, 255, 255, 0.52);
-            background: rgba(12, 12, 22, 0.65);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            cursor: pointer;
-            font: inherit;
-            font-size: 11px;
-            transition: all 0.25s ease;
-            transform: translateX(-50%);
-        }
-
-        .reset-button:hover {
-            color: white;
-            border-color: var(--purple);
-            background: rgba(139, 92, 246, 0.28);
-            box-shadow: 0 6px 22px rgba(139, 92, 246, 0.2);
         }
 
         @media (max-width: 600px) {
-            .topbar {
-                top: 12px;
-            }
-
-            .container {
-                width: min(100% - 24px, 560px);
-            }
-
-            .logo-text {
-                font-size: 2.25rem;
-            }
-
-            .tagline {
-                margin-bottom: 24px;
-                font-size: 0.65rem;
-                letter-spacing: 3px;
-            }
-
-            .search-container {
-                border-radius: 15px;
-            }
-
-            .search-input {
-                padding: 12px 13px;
-                font-size: 0.82rem;
-            }
-
-            .search-button {
-                padding: 11px 16px;
-                border-radius: 11px;
-            }
-
-            .app-buttons {
-                gap: 9px;
-                margin-top: 20px;
-            }
-
-            .app-button {
-                width: 46px;
-                height: 46px;
-                border-radius: 14px;
-            }
-
-            .venusFooter {
-                right: 12px;
-                bottom: 10px;
-            }
-        }
-
-        @media (max-width: 390px) {
-            .logo-text {
-                font-size: 1.9rem;
-                letter-spacing: 4px;
-            }
-
-            .search-input {
-                padding-left: 10px;
-                padding-right: 8px;
-            }
-
-            .search-button {
-                padding: 10px 13px;
-            }
-
-            .reset-button {
-                bottom: 13px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
+            .logo-text { font-size: 1.8rem; }
+            .search-container { max-width: 90%; }
+            .app-button { width: 42px; height: 42px; border-radius: 12px; }
         }
     </style>
 </head>
@@ -611,252 +329,221 @@
     <!-- TOPBAR -->
     <div class="topbar">
         <a href="/" class="active" title="Home">
-            <svg viewBox="0 0 24 24">
-                <path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/>
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
         </a>
         <a href="/settings" title="Settings">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-            </svg>
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </a>
     </div>
 
-    <div class="container">
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="main-content">
         <div class="logo-text">XYLARA</div>
         <div class="tagline">Browse Freely</div>
-
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Search or enter a URL...">
-            <button class="search-button">Go</button>
+            <input type="text" class="search-input" id="search-input" placeholder="Search or enter a URL..." autocomplete="off">
+            <button class="search-button" id="search-go">Go</button>
         </div>
-
-        <div class="app-buttons">
-            <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://discord.com'; document.querySelector('.search-button').click();">
+        <div class="app-buttons" id="app-buttons">
+            <div class="app-button" data-url="https://discord.com">
                 <img src="/assets/svg/discord.svg" alt="Discord">
-            </a>
-            <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://play.geforcenow.com'; document.querySelector('.search-button').click();">
-                <img src="/assets/svg/geforcenow.svg" alt="GeForce Now">
-            </a>
-            <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://youtube.com'; document.querySelector('.search-button').click();">
+            </div>
+            <div class="app-button" data-url="https://youtube.com">
                 <img src="/assets/svg/youtube.svg" alt="YouTube">
-            </a>
-            <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://spotify.com'; document.querySelector('.search-button').click();">
+            </div>
+            <div class="app-button" data-url="https://spotify.com">
                 <img src="/assets/svg/spotify.svg" alt="Spotify">
-            </a>
-            <a href="#" class="app-button" onclick="event.preventDefault(); document.querySelector('.search-input').value = 'https://x.com'; document.querySelector('.search-button').click();">
-                <img src="/assets/svg/x.svg" alt="X">
-            </a>
-            <a href="#" class="app-button" id="add-app-button">
-                <img src="/assets/svg/plus.svg" alt="Add App">
-            </a>
-        </div>
-
-        <div id="add-app-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; backdrop-filter: blur(8px); color: white;">
-            <div style="padding: 24px; border-radius: 16px; text-align: center;">
-                <h3 style="margin-bottom: 14px; font-weight: 700;">Add New App</h3>
-
-                <label style="font-size: 0.7rem; display: block; margin-bottom: 4px;">App Name</label>
-                <input type="text" id="app-name" placeholder="Netflix"><br>
-
-                <label style="font-size: 0.7rem; display: block; margin: 8px 0 4px;">App URL</label>
-                <input type="text" id="app-url" placeholder="netflix.com"><br><br>
-
-                <button id="add-app-submit">Add</button>
-                <button id="add-app-cancel" style="margin-left: 6px;">Cancel</button>
+            </div>
+            <div class="app-button" data-url="https://github.com">
+                <img src="https://www.google.com/s2/favicons?domain=github.com&sz=64" alt="GitHub">
+            </div>
+            <div class="app-button" id="add-app-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </div>
         </div>
     </div>
 
-    <button class="reset-button" onclick="resetSiteData()">Reset Site Data</button>
+    <!-- BROWSER OVERLAY -->
+    <div class="browser-overlay" id="browser-overlay">
+        <div class="browser-toolbar">
+            <button id="browser-back" title="Back">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button id="browser-forward" title="Forward">
+                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button id="browser-refresh" title="Refresh">
+                <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
+            </button>
+            <button id="browser-home" title="Home" style="color: #8b5cf6;">
+                <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
+            </button>
+            <div class="browser-address">
+                <input type="text" id="browser-url-input" placeholder="Search or enter URL..." autocomplete="off">
+            </div>
+            <button id="browser-close" title="Close">
+                <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+            </button>
+        </div>
+        <div class="browser-frame-wrap">
+            <iframe id="browser-frame" src="" referrerpolicy="no-referrer"></iframe>
+        </div>
+    </div>
+
     <a href="#" class="venusFooter">Venus integration</a>
 
     <script>
-        async function uvEncode(url) {
-            const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
-            localStorage.setItem("url", encodedUrl);
-            window.location.href = "/search";
+        let browserHistory = [];
+        let historyIndex = -1;
+
+        function normalizeUrl(query) {
+            query = String(query).trim();
+            if (!query) return null;
+            if (/^https?:\/\//i.test(query)) return query;
+            if (query.includes('.') && !query.includes(' ')) return 'https://' + query;
+            const engine = localStorage.getItem('search') || 'https://www.google.com/search?q=';
+            return engine + encodeURIComponent(query);
         }
 
-        async function sjEncode(url) {
-            localStorage.setItem("url", url);
-            localStorage.setItem("proxy", "scramjet");
-            window.location.href = "/search";
+        function getProxyUrl(url) {
+            // Always encode through UV
+            const encoded = __uv$config.prefix + __uv$config.encodeUrl(url);
+            return encoded;
         }
 
-        async function init() {
+        function openBrowser(url) {
+            const overlay = document.getElementById('browser-overlay');
+            const frame = document.getElementById('browser-frame');
+            const urlInput = document.getElementById('browser-url-input');
+
+            overlay.classList.add('open');
+            urlInput.value = url;
+            
+            // Encode through UV proxy
+            const encoded = getProxyUrl(url);
+            frame.src = encoded;
+
+            if (historyIndex < browserHistory.length - 1) {
+                browserHistory = browserHistory.slice(0, historyIndex + 1);
+            }
+            browserHistory.push(url);
+            historyIndex = browserHistory.length - 1;
+        }
+
+        function closeBrowser() {
+            document.getElementById('browser-overlay').classList.remove('open');
+            browserHistory = [];
+            historyIndex = -1;
+        }
+
+        function browserGoBack() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const url = browserHistory[historyIndex];
+                document.getElementById('browser-url-input').value = url;
+                document.getElementById('browser-frame').src = getProxyUrl(url);
+            }
+        }
+
+        function browserGoForward() {
+            if (historyIndex < browserHistory.length - 1) {
+                historyIndex++;
+                const url = browserHistory[historyIndex];
+                document.getElementById('browser-url-input').value = url;
+                document.getElementById('browser-frame').src = getProxyUrl(url);
+            }
+        }
+
+        function browserRefresh() {
+            const currentUrl = document.getElementById('browser-url-input').value;
+            if (currentUrl) {
+                document.getElementById('browser-frame').src = getProxyUrl(currentUrl);
+            }
+        }
+
+        function handleSearch(query) {
+            const url = normalizeUrl(query);
+            if (url) openBrowser(url);
+        }
+
+        async function initProxy() {
+            // Register service worker for UV
+            if ('serviceWorker' in navigator) {
+                try {
+                    await navigator.serviceWorker.register('/sw.js');
+                    await navigator.serviceWorker.ready;
+                } catch (err) {
+                    console.error('SW registration error:', err);
+                }
+            }
+
+            // Setup BareMux
             try {
                 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-                let transport = localStorage.getItem("transport") || "libcurl";
-                let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+                const wispUrl = localStorage.getItem("wisp") || ((location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/");
+                const transport = localStorage.getItem("transport") || "libcurl";
                 const transportPath = transport === "epoxy" ? "/epoxy/index.mjs" : "/libcurl/index.mjs";
-
                 if (await connection.getTransport() !== transportPath) {
                     await connection.setTransport(transportPath, [{ wisp: wispUrl }]);
                 }
-            } catch (err) {}
-        }
-
-        function resetSiteData() {
-            if (confirm("Reset all settings, custom apps, and site data?")) {
-                localStorage.clear();
-                window.location.reload();
+            } catch (err) {
+                console.error('BareMux init error:', err);
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            init();
+            initProxy();
 
             const defaultBg = '/assets/backgrounds/foggy-forest.png';
             let bg = localStorage.getItem('bg') || defaultBg;
             document.body.style.backgroundImage = `url('${bg}')`;
 
-            const searchInput = document.querySelector('.search-input');
-            const searchButton = document.querySelector('.search-button');
-            const appButtonsDiv = document.querySelector('.app-buttons');
-            const addAppButton = document.getElementById('add-app-button');
+            // Search
+            document.getElementById('search-go').addEventListener('click', () => {
+                handleSearch(document.getElementById('search-input').value);
+            });
 
-            const encodeURL = async (url) => {
-                let proxyType = localStorage.getItem('proxy') || 'ultraviolet';
-                proxyType === 'ultraviolet'
-                    ? await uvEncode(url)
-                    : await sjEncode(url);
-            };
+            document.getElementById('search-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleSearch(e.target.value);
+            });
 
-            const handleSearch = async () => {
-                const query = searchInput ? searchInput.value.trim() : '';
-                if (!query) return;
+            // App shortcuts
+            document.querySelectorAll('#app-buttons .app-button[data-url]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openBrowser(btn.dataset.url);
+                });
+            });
 
-                let url;
-                let isLikelySearch = false;
+            // Browser controls
+            document.getElementById('browser-close').addEventListener('click', closeBrowser);
+            document.getElementById('browser-home').addEventListener('click', closeBrowser);
+            document.getElementById('browser-back').addEventListener('click', browserGoBack);
+            document.getElementById('browser-forward').addEventListener('click', browserGoForward);
+            document.getElementById('browser-refresh').addEventListener('click', browserRefresh);
 
-                try {
-                    url = (query.startsWith('http://') || query.startsWith('https://'))
-                        ? new URL(query)
-                        : new URL('https://' + query);
-
-                    if (!url.hostname || !url.hostname.includes('.')) {
-                        isLikelySearch = true;
-                    }
-                } catch (e) {
-                    isLikelySearch = true;
+            document.getElementById('browser-url-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const url = normalizeUrl(e.target.value);
+                    if (url) openBrowser(url);
                 }
+            });
 
-                if (isLikelySearch) {
-                    url = new URL(
-                        (localStorage.getItem('search') || 'https://www.google.com/search?q=') + query
-                    );
-                }
-
-                await encodeURL(url.toString());
-            };
-
-            const createAppButton = (appName, appUrl) => {
-                const appButton = document.createElement('a');
-                appButton.href = '#';
-                appButton.classList.add('app-button');
-
-                try {
-                    const domain = new URL(appUrl).hostname;
-                    appButton.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" alt="${appName}">`;
-                } catch (e) {
-                    appButton.textContent = appName.substring(0, 2).toUpperCase();
-                }
-
-                appButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    encodeURL(appUrl);
-                });
-
-                appButton.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-
-                    const index = apps.findIndex(app => app.name === appName);
-
-                    if (index > -1) {
-                        apps.splice(index, 1);
-                        localStorage.setItem('apps', JSON.stringify(apps));
-                        appButton.remove();
-                    }
-                });
-
-                return appButton;
-            };
-
-            let apps = JSON.parse(localStorage.getItem('apps') || '[]');
-
-            if (appButtonsDiv && addAppButton) {
-                apps.forEach(app => {
-                    const button = createAppButton(app.name, app.url);
-                    appButtonsDiv.insertBefore(button, addAppButton);
-                });
-            }
-
-            const addAppModal = document.getElementById('add-app-modal');
-            const addAppSubmit = document.getElementById('add-app-submit');
-            const addAppCancel = document.getElementById('add-app-cancel');
-            const appNameInput = document.getElementById('app-name');
-            const appUrlInput = document.getElementById('app-url');
-
-            if (addAppButton && addAppModal) {
-                addAppButton.addEventListener('click', () => {
-                    addAppModal.style.display = 'flex';
-                    if (appNameInput) appNameInput.focus();
-                });
-            }
-
-            if (addAppCancel && addAppModal) {
-                addAppCancel.addEventListener('click', () => {
-                    addAppModal.style.display = 'none';
-                });
-            }
-
-            if (addAppModal) {
-                addAppModal.addEventListener('click', (event) => {
-                    if (event.target === addAppModal) {
-                        addAppModal.style.display = 'none';
-                    }
-                });
-            }
-
-            if (addAppSubmit && addAppModal) {
-                addAppSubmit.addEventListener('click', () => {
-                    const name = appNameInput ? appNameInput.value.trim() : '';
-                    let url = appUrlInput ? appUrlInput.value.trim() : '';
-
-                    if (url && !url.startsWith('http')) {
-                        url = 'https://' + url;
-                    }
-
-                    if (name && url) {
-                        apps.push({ name, url });
-                        localStorage.setItem('apps', JSON.stringify(apps));
-
-                        if (appButtonsDiv && addAppButton) {
-                            const button = createAppButton(name, url);
-                            appButtonsDiv.insertBefore(button, addAppButton);
-                        }
-
-                        addAppModal.style.display = 'none';
-
-                        if (appNameInput) appNameInput.value = '';
-                        if (appUrlInput) appUrlInput.value = '';
-                    }
-                });
-            }
-
-            if (searchButton) {
-                searchButton.addEventListener('click', handleSearch);
-            }
-
-            if (searchInput) {
-                searchInput.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        handleSearch();
-                    }
-                });
-            }
+            // Add app
+            document.getElementById('add-app-button').addEventListener('click', () => {
+                const name = prompt('App name:');
+                if (!name) return;
+                const url = prompt('URL (e.g. netflix.com):');
+                if (!url) return;
+                let fullUrl = url.startsWith('http') ? url : 'https://' + url;
+                const domain = new URL(fullUrl).hostname;
+                const btn = document.createElement('div');
+                btn.className = 'app-button';
+                btn.dataset.url = fullUrl;
+                btn.innerHTML = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" alt="${name}">`;
+                btn.addEventListener('click', () => openBrowser(fullUrl));
+                btn.addEventListener('contextmenu', (e) => { e.preventDefault(); btn.remove(); });
+                document.getElementById('app-buttons').insertBefore(btn, document.getElementById('add-app-button'));
+            });
         });
     </script>
 </body>
