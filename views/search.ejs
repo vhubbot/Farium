@@ -1,40 +1,497 @@
-// In your server.js or routes file
-app.get('/search', async (req, res) => {
-    const query = req.query.q || '';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xylara Search</title>
     
-    let results = [];
-    let knowledge = null;
+    <script src="/scram/scramjet.js"></script>
+    <script src="/controller/controller.api.js"></script>
+    <script src="/epoxy/index.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="/uv/uv.bundle.js"></script>
+    <script src="/uv/uv.config.js"></script>
+
+    <link rel="icon" type="image/png" href="/assets/favicon.png">
     
-    if (query) {
-        try {
-            // Replace this with your actual search API
-            // This is an example using a simple fetch to a search API
-            const searchResponse = await fetch(`https://your-search-api.com/search?q=${encodeURIComponent(query)}`);
-            const data = await searchResponse.json();
-            
-            results = data.results || [];
-            knowledge = data.knowledge || null;
-            
-            // Format results to match your template expectations
-            results = results.map(r => ({
-                title: r.title || 'Untitled',
-                url: r.url || '#',
-                domain: r.domain || new URL(r.url).hostname,
-                snippet: r.snippet || r.description || '',
-                date: r.date || '',
-                favicon: r.favicon || `https://www.google.com/s2/favicons?domain=${new URL(r.url).hostname}&sz=32`
-            }));
-            
-        } catch (error) {
-            console.error('Search error:', error);
-            // Fallback: use your existing search mechanism
-            // If you have a local search function, call it here
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    }
-    
-    res.render('search', {
-        query: query,
-        results: results,
-        knowledge: knowledge
-    });
-});
+
+        body {
+            min-height: 100vh;
+            background: #0a0a12;
+            color: #e8e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .search-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Search Bar */
+        .search-header {
+            margin-bottom: 20px;
+        }
+
+        .search-bar-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            padding: 4px;
+            max-width: 720px;
+            margin: 0 auto 12px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-bar-wrapper:focus-within {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        .search-bar-wrapper input {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            min-width: 0;
+        }
+
+        .search-bar-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-bar-wrapper button {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+            border: none;
+            border-radius: 24px;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.2s;
+            white-space: nowrap;
+        }
+
+        .search-bar-wrapper button:hover {
+            background: linear-gradient(135deg, #9b6cff, #7c3aed);
+            transform: scale(1.02);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            max-width: 720px;
+            margin: 0 auto 24px;
+            padding: 0 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
+
+        .tab:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .tab.active {
+            color: #8b5cf6;
+            border-bottom-color: #8b5cf6;
+        }
+
+        /* Results Layout */
+        .results-layout {
+            display: flex;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-results {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .knowledge-panel {
+            width: 340px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .knowledge-panel.hidden {
+            display: none;
+        }
+
+        .knowledge-panel .panel-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .knowledge-panel .panel-image {
+            width: 100%;
+            border-radius: 12px;
+            margin: 12px 0;
+            max-height: 200px;
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .knowledge-panel .panel-description {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .knowledge-panel .panel-fact {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.9rem;
+        }
+
+        .knowledge-panel .panel-fact .label {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .knowledge-panel .panel-fact .value {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: right;
+        }
+
+        .knowledge-panel .show-more {
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: rgba(139, 92, 246, 0.15);
+            border: none;
+            border-radius: 8px;
+            color: #8b5cf6;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .knowledge-panel .show-more:hover {
+            background: rgba(139, 92, 246, 0.25);
+        }
+
+        /* Result Item */
+        .result-item {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: background 0.15s;
+            border-radius: 8px;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .result-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .result-item .result-url {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 4px;
+        }
+
+        .result-item .result-url .favicon {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            flex-shrink: 0;
+        }
+
+        .result-item .result-title {
+            font-size: 1.1rem;
+            color: #8b5cf6;
+            font-weight: 500;
+            margin-bottom: 2px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .result-item .result-title:hover {
+            color: #a78bfa;
+            text-decoration: underline;
+        }
+
+        .result-item .result-snippet {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
+            margin-top: 2px;
+        }
+
+        .result-item .result-date {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .no-results h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .results-layout {
+                flex-direction: column;
+            }
+
+            .knowledge-panel {
+                width: 100%;
+                position: static;
+                order: -1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .search-bar-wrapper input {
+                padding: 12px 14px;
+                font-size: 0.9rem;
+            }
+
+            .search-bar-wrapper button {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .tab {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+
+            .result-item .result-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <!-- Search Header -->
+        <div class="search-header">
+            <div class="search-bar-wrapper">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search the web..." 
+                    autofocus
+                    value="<%= query || '' %>"
+                >
+                <button id="searchButton">Search</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="web">Web</button>
+                <button class="tab" data-tab="images">Images</button>
+                <button class="tab" data-tab="news">News</button>
+                <button class="tab" data-tab="maps">Maps</button>
+            </div>
+        </div>
+
+        <!-- Results Layout -->
+        <div class="results-layout">
+            <div class="main-results" id="mainResults">
+                <% if (results && results.length > 0) { %>
+                    <% results.forEach((result, index) => { %>
+                        <div class="result-item" data-index="<%= index %>">
+                            <div class="result-url">
+                                <img class="favicon" src="<%= result.favicon || '/assets/favicon.png' %>" alt="">
+                                <span><%= result.domain || new URL(result.url).hostname %></span>
+                                <% if (result.date) { %>
+                                    <span>· <%= result.date %></span>
+                                <% } %>
+                            </div>
+                            <a href="#" class="result-title" data-url="<%= result.url %>">
+                                <%= result.title %>
+                            </a>
+                            <div class="result-snippet">
+                                <%= result.snippet || result.description || '' %>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else if (query) { %>
+                    <div class="no-results">
+                        <h2>No results found for "<%= query %>"</h2>
+                        <p>Try different keywords or check your search settings.</p>
+                    </div>
+                <% } else { %>
+                    <div class="no-results">
+                        <h2>Search the web</h2>
+                        <p>Type a search query above to get started.</p>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Knowledge Panel -->
+            <div class="knowledge-panel <%= knowledge ? '' : 'hidden' %>" id="knowledgePanel">
+                <% if (knowledge) { %>
+                    <div class="panel-title"><%= knowledge.title %></div>
+                    <% if (knowledge.image) { %>
+                        <img class="panel-image" src="<%= knowledge.image %>" alt="<%= knowledge.title %>">
+                    <% } %>
+                    <div class="panel-description"><%= knowledge.description %></div>
+                    
+                    <% if (knowledge.facts) { %>
+                        <% knowledge.facts.forEach(fact => { %>
+                            <div class="panel-fact">
+                                <span class="label"><%= fact.label %></span>
+                                <span class="value"><%= fact.value %></span>
+                            </div>
+                        <% }); %>
+                    <% } %>
+                    
+                    <% if (knowledge.moreLink) { %>
+                        <button class="show-more" onclick="window.open('<%= knowledge.moreLink %>', '_blank')">
+                            Show more →
+                        </button>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---- EXISTING PROXY NAVIGATION FUNCTIONS (from index.ejs) ----
+        async function uvEncode(url) {
+            const encodedUrl = __uv$config.prefix + __uv$config.encodeUrl(url);
+            localStorage.setItem("url", encodedUrl);
+            window.location.href = "/search";
+        }
+
+        async function sjEncode(url) {
+            localStorage.setItem("url", url);
+            localStorage.setItem("proxy", "scramjet");
+            window.location.href = "/search";
+        }
+
+        // ---- REUSE THE EXISTING ENCODE FUNCTION ----
+        function encodeAndNavigate(url) {
+            const proxyType = localStorage.getItem('proxy') || 'ultraviolet';
+            if (proxyType === 'ultraviolet') {
+                uvEncode(url);
+            } else {
+                sjEncode(url);
+            }
+        }
+
+        // ---- SEARCH HANDLING ----
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+            
+            // Navigate to /search?q= using your existing route
+            window.location.href = '/search?q=' + encodeURIComponent(query);
+        }
+
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        // ---- TAB SWITCHING (visual only, preserves search) ----
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Just visual for now - keeps your existing search intact
+                const tabType = this.dataset.tab;
+                console.log('Tab switched to:', tabType);
+            });
+        });
+
+        // ---- RESULT CLICK HANDLING (USES YOUR EXISTING PROXY) ----
+        document.querySelectorAll('.result-title').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.dataset.url;
+                if (url) {
+                    // Use your existing proxy navigation
+                    encodeAndNavigate(url);
+                }
+            });
+        });
+
+        // ---- KEYBOARD SHORTCUT: focus search on "/" ----
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+                const tag = document.activeElement.tagName;
+                if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+            }
+        });
+
+        // ---- AUTO-FOCUS SEARCH ON LOAD ----
+        if (searchInput.value) {
+            searchInput.focus();
+            searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+        }
+
+        console.log('Search page loaded. Query:', '<%= query || "none" %>');
+        console.log('Results count:', <%= results ? results.length : 0 %>);
+    </script>
+</body>
+</html>
