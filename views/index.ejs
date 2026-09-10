@@ -484,265 +484,6 @@
             .app-button { width: 42px; height: 42px; border-radius: 12px; }
         }
 
-        /* ===== FARIUM CUSTOMIZATION LAYER =====
-           This layer only changes presentation/controls. The existing Scramjet,
-           Ultraviolet, BareMux, search, tab and navigation code remains intact. */
-        :root {
-            --accent: #e11d2e;
-            --accent-2: #ff3347;
-            --surface-alpha: 0.82;
-            --shade: 15, 15, 22;
-            --scale: 1;
-            --blur: 20px;
-            --glow: 0.22;
-            --shader-opacity: 0;
-            --ui-scale: calc(var(--scale) * 1);
-        }
-
-        body {
-            --accent-rgb: 139, 92, 246;
-            transition: background-image .45s ease, filter .35s ease;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            inset: -20%;
-            z-index: 0;
-            pointer-events: none;
-            opacity: var(--shader-opacity);
-            background:
-                radial-gradient(circle at 18% 20%, rgba(var(--accent-rgb), .20), transparent 28%),
-                radial-gradient(circle at 82% 78%, rgba(80, 140, 255, .16), transparent 30%),
-                linear-gradient(115deg, transparent 25%, rgba(255,255,255,.035) 50%, transparent 75%);
-            filter: blur(32px) saturate(125%);
-            animation: shaderDrift 12s ease-in-out infinite alternate;
-            mix-blend-mode: screen;
-        }
-
-        @keyframes shaderDrift {
-            from { transform: translate3d(-2%, -1%, 0) rotate(-1deg) scale(1); }
-            to { transform: translate3d(2%, 1%, 0) rotate(1deg) scale(1.05); }
-        }
-
-        @keyframes browserReveal {
-            0% { opacity: 0; transform: translate3d(0, 26px, 0) scale(.985); filter: blur(8px); }
-            65% { opacity: 1; transform: translate3d(0, -2px, 0) scale(1.002); filter: blur(0); }
-            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-        }
-
-        @keyframes browserHide {
-            from { opacity: 1; transform: translate3d(0,0,0) scale(1); filter: blur(0); }
-            to { opacity: 0; transform: translate3d(0,22px,0) scale(.985); filter: blur(8px); }
-        }
-
-        @keyframes panelIn {
-            from { opacity: 0; transform: translateY(-8px) scale(.97); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .topbar, .search-container, .app-button, .browser-address,
-        .browser-toolbar, .tabs-bar, .new-tab-search input {
-            border-color: rgba(var(--accent-rgb), .16);
-        }
-
-        .topbar {
-            box-shadow: 0 12px 40px rgba(0,0,0,.24), 0 0 0 1px rgba(var(--accent-rgb), .05);
-        }
-
-        .topbar a:hover, .topbar a.active {
-            background: rgba(var(--accent-rgb), .18);
-            box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), .12);
-        }
-
-        .search-container {
-            background: rgba(var(--shade), var(--surface-alpha));
-            box-shadow: 0 18px 55px rgba(0,0,0,.25);
-        }
-
-        .search-container:focus-within,
-        .browser-address:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 34px rgba(var(--accent-rgb), var(--glow));
-        }
-
-        .search-button, .new-tab-search button {
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            box-shadow: 0 10px 28px rgba(var(--accent-rgb), .24);
-        }
-
-        .search-button:hover, .new-tab-search button:hover {
-            background: linear-gradient(135deg, var(--accent-2), var(--accent));
-            box-shadow: 0 14px 34px rgba(var(--accent-rgb), .34);
-        }
-
-        .app-button:hover, .new-tab-btn:hover {
-            border-color: var(--accent);
-            background: rgba(var(--accent-rgb), .14);
-            box-shadow: 0 12px 28px rgba(var(--accent-rgb), .18);
-        }
-
-        .browser-overlay {
-            display: flex;
-            visibility: hidden;
-            pointer-events: none;
-            opacity: 0;
-            transform: translate3d(0, 20px, 0) scale(.985);
-            filter: blur(7px);
-            background: rgba(5,5,9,.96);
-            transition: opacity .28s ease, transform .38s cubic-bezier(.2,.8,.2,1), filter .28s ease, visibility 0s linear .38s;
-            will-change: transform, opacity, filter;
-        }
-
-        .browser-overlay.open {
-            visibility: visible;
-            pointer-events: auto;
-            opacity: 1;
-            transform: translate3d(0,0,0) scale(1);
-            filter: blur(0);
-            animation: browserReveal .5s cubic-bezier(.2,.8,.2,1);
-            transition: opacity .28s ease, transform .38s cubic-bezier(.2,.8,.2,1), filter .28s ease, visibility 0s;
-        }
-
-        .browser-overlay.closing {
-            visibility: visible;
-            pointer-events: none;
-            opacity: 0;
-            transform: translate3d(0,22px,0) scale(.985);
-            filter: blur(8px);
-            animation: browserHide .32s ease forwards;
-            transition: none;
-        }
-
-        .browser-toolbar {
-            background: linear-gradient(180deg, rgba(18,18,27,.98), rgba(10,10,15,.96));
-            box-shadow: 0 8px 30px rgba(0,0,0,.20);
-        }
-
-        .browser-toolbar button:hover {
-            background: rgba(var(--accent-rgb), .12);
-            color: var(--accent-2);
-        }
-
-        .browser-address:focus-within { background: rgba(var(--accent-rgb), .07); }
-        .tab.active {
-            box-shadow: inset 0 2px 0 var(--accent);
-        }
-
-        /* Settings / customization panel */
-        .customizer-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: 500;
-            background: rgba(0,0,0,.45);
-            backdrop-filter: blur(8px);
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: opacity .25s ease, visibility 0s linear .3s;
-        }
-        .customizer-backdrop.open {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-            transition: opacity .25s ease;
-        }
-        .customizer {
-            position: absolute;
-            top: 64px;
-            right: 18px;
-            width: min(360px, calc(100vw - 28px));
-            max-height: calc(100vh - 82px);
-            overflow: auto;
-            padding: 18px;
-            border: 1px solid rgba(255,255,255,.12);
-            border-radius: 20px;
-            background: rgba(13,13,20,.94);
-            box-shadow: 0 30px 90px rgba(0,0,0,.5), 0 0 50px rgba(var(--accent-rgb), .10);
-            backdrop-filter: blur(26px) saturate(130%);
-            transform: translateY(-8px) scale(.97);
-            opacity: 0;
-            transition: transform .3s cubic-bezier(.2,.8,.2,1), opacity .25s ease;
-        }
-        .customizer-backdrop.open .customizer {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-            animation: panelIn .32s cubic-bezier(.2,.8,.2,1);
-        }
-        .customizer::-webkit-scrollbar { width: 5px; }
-        .customizer::-webkit-scrollbar-thumb { background: rgba(255,255,255,.14); border-radius: 99px; }
-        .customizer-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        .customizer-title { font-size: 15px; font-weight: 800; }
-        .customizer-subtitle { margin-top: 3px; font-size: 10px; color: #777; }
-        .customizer-close {
-            width: 30px; height: 30px; border: 0; border-radius: 10px;
-            color: #aaa; background: rgba(255,255,255,.06); cursor: pointer;
-            font-size: 16px;
-        }
-        .customizer-close:hover { color:#fff; background:rgba(255,255,255,.11); }
-        .setting-group {
-            padding: 13px 0;
-            border-top: 1px solid rgba(255,255,255,.07);
-        }
-        .setting-label {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 9px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #ddd;
-        }
-        .setting-value { color: var(--accent-2); font-variant-numeric: tabular-nums; }
-        .color-row { display:flex; gap:8px; align-items:center; }
-        .color-row input[type="color"] {
-            width: 44px; height: 34px; padding: 2px; border-radius: 9px;
-            border: 1px solid rgba(255,255,255,.12); background:#111; cursor:pointer;
-        }
-        .preset-row { display:flex; flex-wrap:wrap; gap:7px; }
-        .preset {
-            width: 27px; height: 27px; border-radius: 9px; border: 1px solid rgba(255,255,255,.14);
-            cursor:pointer; box-shadow: 0 4px 14px rgba(0,0,0,.2);
-        }
-        .range {
-            width: 100%;
-            accent-color: var(--accent);
-            cursor: pointer;
-        }
-        .toggle-row { display:flex; align-items:center; justify-content:space-between; }
-        .toggle {
-            position:relative; width:42px; height:24px; border-radius:99px;
-            background:#282832; border:1px solid rgba(255,255,255,.1); cursor:pointer;
-        }
-        .toggle::after {
-            content:''; position:absolute; top:3px; left:3px; width:16px; height:16px;
-            border-radius:50%; background:#aaa; transition:.22s ease;
-        }
-        .toggle.on { background:rgba(var(--accent-rgb),.5); border-color:rgba(var(--accent-rgb),.7); }
-        .toggle.on::after { left:21px; background:#fff; box-shadow:0 0 12px rgba(255,255,255,.5); }
-        .select {
-            width:100%; padding:9px 10px; border-radius:10px; color:#eee;
-            background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-            outline:none; font-family:inherit;
-        }
-        .reset-settings {
-            width:100%; margin-top:8px; padding:9px; border-radius:10px;
-            color:#ccc; background:rgba(255,255,255,.05);
-            border:1px solid rgba(255,255,255,.1); cursor:pointer; font-family:inherit;
-        }
-        .reset-settings:hover { background:rgba(255,255,255,.09); color:#fff; }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
-        }
-
-        body.ui-scaled .topbar { transform: translateX(-50%) scale(var(--scale)); transform-origin: top center; }
-        body.ui-scaled .main-content { transform: scale(var(--scale)); }
-        body.ui-scaled .browser-toolbar, body.ui-scaled .tabs-bar { font-size: calc(1em * var(--scale)); }
 
 
         /* ===== FARIUM PARTICLES ===== */
@@ -772,6 +513,302 @@
         .chat-main{min-width:0;display:flex;flex-direction:column}.chat-room-head{height:56px;flex:none;padding:0 17px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07)}.online-dot{width:8px;height:8px;border-radius:50%;background:#e11d2e;box-shadow:0 0 10px rgba(225,29,46,.8)}.chat-messages{flex:1;overflow:auto;padding:16px}.chat-message{display:flex;gap:9px;margin-bottom:13px;animation:chatMessageIn .2s ease}.chat-message .chat-avatar{width:32px;height:32px}.chat-message-body{min-width:0}.chat-message-name{font-size:11px;font-weight:800}.chat-message-time{font-size:8px;color:#555;margin-left:6px}.chat-message-text{margin-top:3px;color:#ddd;font-size:12px;line-height:1.5;white-space:pre-wrap;word-break:break-word}.chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.07)}.chat-compose input{flex:1}.chat-compose button{padding:0 17px}@keyframes chatMessageIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
         @media(max-width:700px){.chat-overlay{padding:8px}.chat-window{width:100%;height:calc(100vh - 16px);border-radius:18px}.chat-app{grid-template-columns:1fr}.chat-sidebar{display:none}.farium-chat-launch{right:14px;bottom:14px}.chat-compose button{padding:0 12px}}
 
+    
+        /* ===== FARIUS BLACK THEME ===== */
+        :root {
+            --accent: #ffffff;
+            --accent-2: #d8d8d8;
+            --accent-rgb: 255,255,255;
+        }
+
+        body {
+            background: #000 !important;
+            color: #fff;
+        }
+
+        body::before {
+            background:
+                radial-gradient(circle at 50% 35%, rgba(255,255,255,.045), transparent 34%),
+                linear-gradient(180deg, #000 0%, #030303 55%, #000 100%) !important;
+        }
+
+        body::after {
+            opacity: .32;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255,255,255,.055), transparent 25%),
+                radial-gradient(circle at 85% 75%, rgba(255,255,255,.035), transparent 30%),
+                linear-gradient(115deg, transparent 25%, rgba(255,255,255,.025) 50%, transparent 75%);
+            filter: blur(40px);
+        }
+
+        .topbar {
+            background: rgba(5,5,5,.88) !important;
+            border-color: rgba(255,255,255,.11) !important;
+            box-shadow: 0 15px 45px rgba(0,0,0,.8);
+        }
+
+        .topbar a:hover,
+        .topbar a.active {
+            background: rgba(255,255,255,.09) !important;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.07);
+        }
+
+        .logo-image-wrap {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin-bottom:10px;
+            min-height:76px;
+            animation: logoDrop .85s cubic-bezier(.16,1,.3,1) both;
+        }
+
+        .farius-logo {
+            display:block;
+            width:min(220px, 52vw);
+            max-height:82px;
+            object-fit:contain;
+            filter:
+                drop-shadow(0 15px 35px rgba(0,0,0,.9))
+                drop-shadow(0 0 22px rgba(255,255,255,.055));
+            transition: transform .45s cubic-bezier(.2,.9,.2,1), filter .35s ease;
+        }
+
+        .logo-image-wrap:hover .farius-logo {
+            transform: translateY(-5px) scale(1.035);
+            filter:
+                drop-shadow(0 20px 45px rgba(0,0,0,1))
+                drop-shadow(0 0 35px rgba(255,255,255,.09));
+        }
+
+        @keyframes logoDrop {
+            0% { opacity:0; transform:translateY(-55px) scale(.72) rotate(-4deg); filter:blur(10px); }
+            55% { opacity:1; transform:translateY(7px) scale(1.04) rotate(1deg); filter:blur(0); }
+            72% { transform:translateY(-3px) scale(.985); }
+            100% { opacity:1; transform:none; }
+        }
+
+        .tagline {
+            color:#666 !important;
+            margin-bottom:24px;
+        }
+
+        .search-container {
+            background:#060606 !important;
+            border-color:#1d1d1d !important;
+            box-shadow:
+                0 20px 65px rgba(0,0,0,.9),
+                inset 0 1px 0 rgba(255,255,255,.035) !important;
+        }
+
+        .search-container:focus-within {
+            border-color:#444 !important;
+            box-shadow:
+                0 0 35px rgba(255,255,255,.06),
+                0 20px 65px rgba(0,0,0,.9) !important;
+        }
+
+        .search-button,
+        .new-tab-search button {
+            background:#fff !important;
+            color:#000 !important;
+            box-shadow:0 10px 30px rgba(0,0,0,.65) !important;
+        }
+
+        .search-button:hover,
+        .new-tab-search button:hover {
+            background:#ddd !important;
+            box-shadow:0 15px 40px rgba(255,255,255,.08) !important;
+        }
+
+        .app-button {
+            background:#050505 !important;
+            border-color:#1d1d1d !important;
+        }
+
+        .app-button:hover {
+            background:#111 !important;
+            border-color:#555 !important;
+            box-shadow:0 12px 30px rgba(0,0,0,.9) !important;
+        }
+
+        .browser-overlay,
+        .browser-toolbar,
+        .tabs-bar,
+        .new-tab-page {
+            background:#000 !important;
+        }
+
+        .browser-toolbar {
+            border-bottom-color:#171717 !important;
+        }
+
+        .browser-address {
+            background:#080808 !important;
+            border-color:#202020 !important;
+        }
+
+        .browser-address:focus-within {
+            border-color:#555 !important;
+            box-shadow:0 0 25px rgba(255,255,255,.05) !important;
+        }
+
+        .tab.active {
+            background:#0b0b0b !important;
+            border-color:#1d1d1d !important;
+            box-shadow:inset 0 2px 0 #fff !important;
+        }
+
+        .new-tab-logo {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin-bottom:8px;
+        }
+
+        .new-tab-farius-logo {
+            width:min(190px,48vw);
+            max-height:70px;
+        }
+
+        .new-tab-search input {
+            background:#080808 !important;
+            border-color:#1d1d1d !important;
+        }
+
+        .new-tab-search input:focus {
+            border-color:#444 !important;
+        }
+
+        /* Crazy black launch/return button */
+        .hohogames-back {
+            position:fixed;
+            right:22px;
+            bottom:22px;
+            z-index:120;
+            width:205px;
+            min-height:64px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            padding:10px 14px;
+            color:#fff;
+            text-decoration:none;
+            background:#050505;
+            border:1px solid #222;
+            border-radius:16px;
+            overflow:hidden;
+            box-shadow:
+                0 15px 45px rgba(0,0,0,.9),
+                inset 0 1px 0 rgba(255,255,255,.05);
+            transition:
+                transform .35s cubic-bezier(.2,.9,.2,1),
+                border-color .35s ease,
+                box-shadow .35s ease;
+        }
+
+        .hohogames-back::before {
+            content:"";
+            position:absolute;
+            inset:-80%;
+            background:radial-gradient(circle, rgba(255,255,255,.08), transparent 38%);
+            opacity:0;
+            transition:opacity .4s ease, transform .6s ease;
+        }
+
+        .hohogames-back::after {
+            content:"";
+            position:absolute;
+            top:0;
+            left:-120%;
+            width:70%;
+            height:100%;
+            background:linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
+            transform:skewX(-20deg);
+            transition:left .65s ease;
+        }
+
+        .hohogames-back:hover {
+            transform:translateY(-6px) scale(1.035);
+            border-color:#444;
+            box-shadow:
+                0 22px 60px rgba(0,0,0,1),
+                0 0 30px rgba(255,255,255,.035),
+                inset 0 1px 0 rgba(255,255,255,.08);
+        }
+
+        .hohogames-back:hover::before {
+            opacity:1;
+            transform:translate(30%,20%);
+        }
+
+        .hohogames-back:hover::after {
+            left:145%;
+        }
+
+        .hohogames-back:active {
+            animation:hohoLaunch .65s cubic-bezier(.2,.9,.2,1);
+        }
+
+        @keyframes hohoLaunch {
+            0% { transform:scale(1); }
+            25% { transform:scale(.94); }
+            55% {
+                transform:scale(1.08);
+                box-shadow:0 0 55px rgba(255,255,255,.12);
+            }
+            100% { transform:scale(1.18); }
+        }
+
+        .hohogames-back-icon {
+            position:relative;
+            z-index:2;
+            width:38px;
+            height:38px;
+            display:grid;
+            place-items:center;
+            border-radius:11px;
+            background:#0b0b0b;
+            border:1px solid #262626;
+            color:#fff;
+            font-size:21px;
+            transition:transform .4s cubic-bezier(.2,.9,.2,1);
+        }
+
+        .hohogames-back:hover .hohogames-back-icon {
+            transform:translateX(-4px) scale(1.08);
+        }
+
+        .hohogames-back-text {
+            position:relative;
+            z-index:2;
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+        }
+
+        .hohogames-back-text strong {
+            font-size:11px;
+            letter-spacing:1.6px;
+        }
+
+        .hohogames-back-text small {
+            color:#666;
+            font-size:9px;
+            letter-spacing:1.3px;
+        }
+
+        @media(max-width:600px) {
+            .hohogames-back {
+                right:12px;
+                bottom:12px;
+                width:178px;
+            }
+
+            .farius-logo {
+                width:min(185px,58vw);
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -785,76 +822,10 @@
         <a href="/settings" title="Settings">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         </a>
-        <button class="customize-button" id="customize-button" title="Customize appearance" aria-label="Customize appearance">
-            <svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="7" r="2"/><circle cx="7" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg>
-        </button>
     </div>
-
-
-    <!-- CUSTOMIZATION MENU (presentation only; proxy/search code is untouched) -->
-    <div class="customizer-backdrop" id="customizer-backdrop">
-        <section class="customizer" role="dialog" aria-label="Farium customization">
-            <div class="customizer-header">
-                <div>
-                    <div class="customizer-title">Customize Farium</div>
-                    <div class="customizer-subtitle">Colors, shades, shaders and UI scale</div>
-                </div>
-                <button class="customizer-close" id="customizer-close" aria-label="Close settings">×</button>
-            </div>
-
-            <div class="setting-group">
-                <div class="setting-label"><span>Accent color</span><span class="setting-value" id="accent-value">#e11d2e</span></div>
-                <div class="color-row">
-                    <input type="color" id="accent-color" value="#e11d2e">
-                    <div class="preset-row" id="accent-presets">
-                        <button class="preset" data-color="#e11d2e" style="background:#e11d2e" aria-label="Purple"></button>
-                        <button class="preset" data-color="#06b6d4" style="background:#06b6d4" aria-label="Cyan"></button>
-                        <button class="preset" data-color="#3b82f6" style="background:#3b82f6" aria-label="Blue"></button>
-                        <button class="preset" data-color="#22c55e" style="background:#22c55e" aria-label="Green"></button>
-                        <button class="preset" data-color="#f59e0b" style="background:#f59e0b" aria-label="Amber"></button>
-                        <button class="preset" data-color="#ef4444" style="background:#ef4444" aria-label="Red"></button>
-                        <button class="preset" data-color="#ec4899" style="background:#ec4899" aria-label="Pink"></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="setting-group">
-                <div class="setting-label"><span>Search bar shade</span><span class="setting-value" id="shade-value">82%</span></div>
-                <input class="range" id="shade-range" type="range" min="35" max="98" value="82">
-            </div>
-
-            <div class="setting-group">
-                <div class="setting-label"><span>Glow intensity</span><span class="setting-value" id="glow-value">22%</span></div>
-                <input class="range" id="glow-range" type="range" min="0" max="60" value="22">
-            </div>
-
-            <div class="setting-group">
-                <div class="setting-label"><span>UI size</span><span class="setting-value" id="scale-value">100%</span></div>
-                <input class="range" id="scale-range" type="range" min="80" max="125" value="100">
-            </div>
-
-            <div class="setting-group">
-                <div class="setting-label"><span>Shader intensity</span><span class="setting-value" id="shader-value">0%</span></div>
-                <input class="range" id="shader-range" type="range" min="0" max="70" value="0">
-            </div>
-
-            <div class="setting-group">
-                <div class="setting-label"><span>Shader style</span></div>
-                <select class="select" id="shader-style">
-                    <option value="aurora">Aurora glow</option>
-                    <option value="soft">Soft glass</option>
-                    <option value="vivid">Vivid bloom</option>
-                    <option value="none">Off</option>
-                </select>
-            </div>
-
-            <button class="reset-settings" id="reset-settings">Reset appearance</button>
-        </section>
-    </div>
-
-    <!-- MAIN CONTENT -->
+<!-- MAIN CONTENT -->
     <div class="main-content" id="main-content">
-        <div class="logo-text">FARIUM</div>
+        <div class="logo-image-wrap"><img class="farius-logo" src="/assets/farius.png" alt="Farius"></div>
         <div class="tagline">Browse Freely</div>
         <div class="search-container">
             <input type="text" class="search-input" id="search-input" placeholder="Search or enter a URL..." autocomplete="off">
@@ -877,7 +848,21 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </div>
         </div>
-    </div>
+    
+    <!-- HOHOGAMES RETURN BUTTON -->
+    <a
+        class="hohogames-back"
+        href="https://sites.google.com/view/hohogames2g/home"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Go back to Hohogames"
+    >
+        <span class="hohogames-back-icon">←</span>
+        <span class="hohogames-back-text">
+            <strong>GO BACK</strong>
+            <small>HOHOGAMES</small>
+        </span>
+    </a>
 
     <!-- BROWSER OVERLAY -->
     <div class="browser-overlay" id="browser-overlay">
@@ -891,7 +876,7 @@
             <button id="browser-refresh" title="Refresh">
                 <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
             </button>
-            <button id="browser-home" title="Home" style="color: #e11d2e;">
+            <button id="browser-home" title="Home" style="color: #ffffff;">
                 <svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM9 20v-6h6v6"/></svg>
             </button>
             <div class="browser-address">
@@ -910,7 +895,7 @@
         <div class="browser-frame-wrap">
             <iframe id="browser-frame" src="" referrerpolicy="no-referrer"></iframe>
             <div class="new-tab-page" id="new-tab-page">
-                <div class="new-tab-logo">FARIUM</div>
+                <div class="new-tab-logo"><img class="farius-logo new-tab-farius-logo" src="/assets/farius.png" alt="Farius"></div>
                 <div class="new-tab-sub">Browse Freely</div>
                 <div class="new-tab-search">
                     <input type="text" id="new-tab-search-input" placeholder="Search or enter URL..." autocomplete="off">
@@ -1225,118 +1210,7 @@
             });
 
             // Add app
-
-            // ===== Appearance customization =====
-            const root = document.documentElement;
-            const backdrop = document.getElementById('customizer-backdrop');
-            const accentInput = document.getElementById('accent-color');
-            const shadeRange = document.getElementById('shade-range');
-            const glowRange = document.getElementById('glow-range');
-            const scaleRange = document.getElementById('scale-range');
-            const shaderRange = document.getElementById('shader-range');
-            const shaderStyle = document.getElementById('shader-style');
-
-            function hexToRgb(hex) {
-                const n = hex.replace('#','');
-                return [
-                    parseInt(n.slice(0,2),16),
-                    parseInt(n.slice(2,4),16),
-                    parseInt(n.slice(4,6),16)
-                ].join(', ');
-            }
-
-            function applyAppearance(save = true) {
-                const accent = accentInput.value;
-                root.style.setProperty('--accent', accent);
-                root.style.setProperty('--accent-2', accent);
-                root.style.setProperty('--accent-rgb', hexToRgb(accent));
-                root.style.setProperty('--surface-alpha', (Number(shadeRange.value) / 100).toFixed(2));
-                root.style.setProperty('--glow', (Number(glowRange.value) / 100).toFixed(2));
-                root.style.setProperty('--scale', (Number(scaleRange.value) / 100).toFixed(2));
-                root.style.setProperty('--shader-opacity', (Number(shaderRange.value) / 100).toFixed(2));
-                document.body.classList.add('ui-scaled');
-
-                document.getElementById('accent-value').textContent = accent;
-                document.getElementById('shade-value').textContent = shadeRange.value + '%';
-                document.getElementById('glow-value').textContent = glowRange.value + '%';
-                document.getElementById('scale-value').textContent = scaleRange.value + '%';
-                document.getElementById('shader-value').textContent = shaderRange.value + '%';
-
-                const style = shaderStyle.value;
-                document.body.dataset.shader = style;
-                if (style === 'none') {
-                    root.style.setProperty('--shader-opacity', '0');
-                } else if (style === 'soft') {
-                    document.body.style.filter = 'saturate(105%)';
-                } else if (style === 'vivid') {
-                    document.body.style.filter = 'saturate(125%) contrast(103%)';
-                } else {
-                    document.body.style.filter = 'none';
-                }
-
-                if (save) {
-                    localStorage.setItem('fariumAppearance', JSON.stringify({
-                        accent, shade: shadeRange.value, glow: glowRange.value,
-                        scale: scaleRange.value, shader: shaderRange.value, shaderStyle: style
-                    }));
-                }
-            }
-
-            function loadAppearance() {
-                try {
-                    const saved = JSON.parse(localStorage.getItem('fariumAppearance') || 'null');
-                    if (saved) {
-                        accentInput.value = saved.accent || '#e11d2e';
-                        shadeRange.value = saved.shade || 82;
-                        glowRange.value = saved.glow || 22;
-                        scaleRange.value = saved.scale || 100;
-                        shaderRange.value = saved.shader || 0;
-                        shaderStyle.value = saved.shaderStyle || 'aurora';
-                    }
-                } catch (e) {}
-                applyAppearance(false);
-            }
-
-            function openCustomizer() { backdrop.classList.add('open'); }
-            function closeCustomizer() { backdrop.classList.remove('open'); }
-
-            // IMPORTANT: the original Settings link still navigates to /settings.
-            // The new Customize button opens the appearance panel.
-            document.getElementById('customize-button').addEventListener('click', openCustomizer);
-            document.getElementById('customizer-close').addEventListener('click', closeCustomizer);
-            backdrop.addEventListener('click', (e) => {
-                if (e.target === backdrop) closeCustomizer();
-            });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeCustomizer();
-            });
-
-            [accentInput, shadeRange, glowRange, scaleRange, shaderRange, shaderStyle].forEach(el => {
-                el.addEventListener('input', () => applyAppearance(true));
-                el.addEventListener('change', () => applyAppearance(true));
-            });
-
-            document.querySelectorAll('#accent-presets .preset').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    accentInput.value = btn.dataset.color;
-                    applyAppearance(true);
-                });
-            });
-
-            document.getElementById('reset-settings').addEventListener('click', () => {
-                accentInput.value = '#e11d2e';
-                shadeRange.value = 82;
-                glowRange.value = 22;
-                scaleRange.value = 100;
-                shaderRange.value = 0;
-                shaderStyle.value = 'aurora';
-                localStorage.removeItem('fariumAppearance');
-                applyAppearance(false);
-            });
-
-            loadAppearance();
-
-            document.getElementById('add-app-button').addEventListener('click', () => {
+document.getElementById('add-app-button').addEventListener('click', () => {
                 const name = prompt('App name:');
                 if (!name) return;
                 const url = prompt('URL (e.g. netflix.com):');
@@ -1359,7 +1233,7 @@
         let particleMode = localStorage.getItem('fariumParticles') || 'embers';
         let particleCount = Number(localStorage.getItem('fariumParticleCount') || 55);
         let particles = [];
-        function particleColor() { return localStorage.getItem('fariumParticleColor') || '#e11d2e'; }
+        function particleColor() { return '#ffffff'; }
         function resizeParticles(){ particleCanvas.width=innerWidth*devicePixelRatio; particleCanvas.height=innerHeight*devicePixelRatio; particleCanvas.style.width=innerWidth+'px'; particleCanvas.style.height=innerHeight+'px'; particleCtx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
         function resetParticles(){ particles=[]; if(particleMode==='off') return; const n=Math.max(0,Math.min(180,particleCount)); for(let i=0;i<n;i++) particles.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*2+.5,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.35,a:Math.random()*.6+.15}); }
         function drawParticles(){ particleCtx.clearRect(0,0,innerWidth,innerHeight); if(particleMode==='off'){requestAnimationFrame(drawParticles);return;} const c=particleColor(); for(const p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<-10)p.x=innerWidth+10;if(p.x>innerWidth+10)p.x=-10;if(p.y<-10)p.y=innerHeight+10;if(p.y>innerHeight+10)p.y=-10; particleCtx.globalAlpha=p.a; particleCtx.fillStyle=c; if(particleMode==='stars'){particleCtx.beginPath();particleCtx.arc(p.x,p.y,p.r*.65,0,Math.PI*2);particleCtx.fill();}else if(particleMode==='bubbles'){particleCtx.strokeStyle=c;particleCtx.lineWidth=1;particleCtx.beginPath();particleCtx.arc(p.x,p.y,p.r*2.2,0,Math.PI*2);particleCtx.stroke();}else{particleCtx.beginPath();particleCtx.arc(p.x,p.y,p.r,0,Math.PI*2);particleCtx.fill();}} particleCtx.globalAlpha=1; requestAnimationFrame(drawParticles); }
