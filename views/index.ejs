@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farius</title>
     
+    <!-- Proxy Dependencies -->
     <script src="/scram/scramjet.js"></script>
     <script src="/controller/controller.api.js"></script>
     <script src="/epoxy/index.js"></script>
@@ -39,15 +40,13 @@
         }
 
         body {
-            margin: 0;
-            padding: 0;
             background-color: var(--bg-main) !important;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--text-primary);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             position: relative;
             overflow: hidden;
         }
@@ -101,7 +100,7 @@
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.25s ease;
             text-decoration: none;
         }
 
@@ -175,7 +174,7 @@
             padding: 6px;
             backdrop-filter: blur(25px);
             animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.3s ease;
             box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
 
@@ -208,7 +207,7 @@
             color: #000;
             font-size: 14px;
             font-weight: 800;
-            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.25s ease;
             font-family: inherit;
         }
 
@@ -241,7 +240,7 @@
             border: 1px solid var(--border-color);
             color: white;
             text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.3s ease;
             overflow: hidden;
         }
 
@@ -270,7 +269,7 @@
             border-radius: 16px;
             backdrop-filter: blur(20px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.8);
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.3s ease;
         }
 
         .hohogames-back:hover {
@@ -281,6 +280,7 @@
         .hohogames-back-text strong { display: block; font-size: 11px; letter-spacing: 1.5px; }
         .hohogames-back-text small { color: var(--text-secondary); font-size: 9px; letter-spacing: 1px; }
 
+        /* Browser Overlay Styles */
         .browser-overlay {
             position: fixed;
             inset: 0;
@@ -445,6 +445,7 @@
 
         .new-tab-page.hidden { display: none; }
 
+        /* Chat System Styles */
         .farium-chat-launch {
             position: fixed;
             right: 22px;
@@ -460,7 +461,7 @@
             backdrop-filter: blur(20px);
             cursor: pointer;
             box-shadow: 0 12px 35px rgba(0,0,0,0.8);
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transition: all 0.3s ease;
             font: 600 12px Inter, sans-serif;
         }
 
@@ -531,7 +532,7 @@
             font: inherit;
         }
 
-        .chat-error { color: #ff5555; font-size: 11px; min-height: 14px; margin-top: 4px; }
+        .chat-error { color: #ff5555; font-size: 11px; min-height: 14px; margin-top: 4px; text-align: center; }
 
         .chat-app { display: flex; flex: 1; height: calc(100% - 60px); }
         .chat-sidebar { width: 220px; border-right: 1px solid var(--border-color); padding: 16px; display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.2); }
@@ -606,20 +607,21 @@
         </span>
     </a>
 
+    <!-- Browser Interface -->
     <div class="browser-overlay" id="browser-overlay">
         <div class="browser-toolbar">
-            <button id="browser-back">←</button>
-            <button id="browser-forward">→</button>
-            <button id="browser-refresh">↻</button>
-            <button id="browser-home">⌂</button>
+            <button id="browser-back" title="Back">←</button>
+            <button id="browser-forward" title="Forward">→</button>
+            <button id="browser-refresh" title="Refresh">↻</button>
+            <button id="browser-home" title="Home">⌂</button>
             <div class="browser-address">
                 <input type="text" id="browser-url-input" placeholder="Search or enter URL..." autocomplete="off">
             </div>
-            <button id="browser-close">✕</button>
+            <button id="browser-close" title="Close Browser">✕</button>
         </div>
         
         <div class="tabs-bar" id="tabs-bar">
-            <button class="new-tab-btn" id="new-tab-btn">+</button>
+            <button class="new-tab-btn" id="new-tab-btn" title="New Tab">+</button>
         </div>
 
         <div class="browser-frame-wrap">
@@ -633,6 +635,7 @@
         </div>
     </div>
 
+    <!-- Chat Interface -->
     <button class="farium-chat-launch" id="farium-chat-launch">
         <span>●</span><span>Chat</span>
     </button>
@@ -647,6 +650,7 @@
                 <button class="chat-close" id="chat-close">✕</button>
             </header>
             
+            <!-- Auth Screen -->
             <div class="chat-auth" id="chat-auth">
                 <div class="chat-auth-title" id="auth-title">Welcome Back</div>
                 <div class="chat-auth-sub" id="auth-sub">Sign in to join the discussion.</div>
@@ -655,21 +659,21 @@
                     <button class="chat-auth-tab" id="tab-register">Sign up</button>
                 </div>
                 <form id="chat-auth-form">
-                    <input id="chat-username" placeholder="Username" autocomplete="username" required>
-                    <input id="chat-password" type="password" placeholder="Password" autocomplete="current-password" required>
+                    <input id="chat-username" placeholder="Username" autocomplete="username" required minlength="3">
+                    <input id="chat-password" type="password" placeholder="Password" autocomplete="current-password" required minlength="4">
                     <button class="search-button" type="submit" id="chat-auth-submit" style="width: 100%; margin-top: 10px;">Sign in</button>
                     <div class="chat-error" id="chat-auth-error"></div>
                 </form>
             </div>
 
+            <!-- Chat Application -->
             <div class="chat-app" id="chat-app" style="display: none;">
                 <aside class="chat-sidebar">
                     <div class="chat-me" id="chat-me">User</div>
                     <div class="chat-section-title">Online Members</div>
                     <div class="chat-friends" id="chat-friends">
                         <div class="chat-friend-item">● General Lounge</div>
-                        <div class="chat-friend-item">● Alex</div>
-                        <div class="chat-friend-item">● Nova</div>
+                        <!-- NOTE: In a fully productionized app, these would populate from a backend database -->
                     </div>
                     <button class="chat-logout" id="chat-logout">Sign out</button>
                 </aside>
@@ -677,7 +681,7 @@
                     <div class="chat-room-head"><strong># Global Chat</strong></div>
                     <div class="chat-messages" id="chat-messages"></div>
                     <form class="chat-compose" id="chat-compose">
-                        <input id="chat-message-input" placeholder="Type a message..." autocomplete="off">
+                        <input id="chat-message-input" placeholder="Type a message..." autocomplete="off" required>
                         <button type="submit">Send</button>
                     </form>
                 </main>
@@ -688,9 +692,9 @@
     <a href="#" class="venusFooter">Venus Integration</a>
 
     <script>
-        // --- BAREMUX & ULTRAVIOLET PROXY INITIALIZATION ---
-        let swRegistered = false;
-
+        /* =========================================
+           1. PROXY CONFIGURATION (UV & BareMux)
+        ========================================= */
         async function initProxy() {
             if ('serviceWorker' in navigator) {
                 try {
@@ -701,15 +705,19 @@
                         const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
                         await connection.setTransport("/epoxy/index.mjs", [{ bare: "https://bare.benrogo.net" }]);
                     }
-                    swRegistered = true;
                 } catch (err) {
                     console.warn("Proxy registration state:", err.message);
                 }
             }
         }
-        initProxy();
+        // Initialize proxy logic if Ultraviolet is defined
+        if (typeof __uv$config !== 'undefined') {
+            initProxy();
+        }
 
-        // --- BROWSER ENGINE & TAB SYSTEM ---
+        /* =========================================
+           2. BROWSER ENGINE & TAB SYSTEM
+        ========================================= */
         let tabs = [];
         let activeTabId = null;
 
@@ -739,7 +747,12 @@
 
         function addTab(url) {
             const id = 't_' + Date.now() + Math.random().toString(36).substr(2, 4);
-            const tab = new Tab(id, url, url ? new URL(url).hostname : 'New Tab');
+            let title = 'New Tab';
+            try {
+                if (url) title = new URL(url).hostname;
+            } catch(e) {}
+
+            const tab = new Tab(id, url, title);
             tabs.push(tab);
             renderTabs();
             switchTab(id);
@@ -762,6 +775,7 @@
                 frame.classList.remove('visible');
                 newTabPage.classList.remove('hidden');
                 urlInput.value = '';
+                frame.src = ''; 
             }
         }
 
@@ -773,38 +787,70 @@
             newTabPage.classList.add('hidden');
             urlInput.value = url;
             frame.src = getProxyUrl(url);
+
+            const tab = tabs.find(t => t.id === activeTabId);
+            if(tab) {
+                tab.url = url;
+                try { tab.title = new URL(url).hostname; } catch(e) {}
+                renderTabs();
+            }
         }
 
         function renderTabs() {
             const tabsBar = document.getElementById('tabs-bar');
+            // Clear existing tabs except the new tab button
             tabsBar.querySelectorAll('.tab').forEach(el => el.remove());
+            
             tabs.forEach(tab => {
                 const el = document.createElement('div');
                 el.className = 'tab' + (tab.id === activeTabId ? ' active' : '');
                 el.innerHTML = `<span class="tab-title">${tab.title}</span><button class="tab-close">✕</button>`;
+                
                 el.querySelector('.tab-title').addEventListener('click', () => switchTab(tab.id));
+                
                 el.querySelector('.tab-close').addEventListener('click', (e) => {
                     e.stopPropagation();
                     tabs = tabs.filter(t => t.id !== tab.id);
-                    if (tabs.length === 0) closeBrowser();
-                    else switchTab(tabs[0].id);
+                    if (tabs.length === 0) {
+                        closeBrowser();
+                    } else if (tab.id === activeTabId) {
+                        switchTab(tabs[tabs.length - 1].id);
+                    } else {
+                        renderTabs();
+                    }
                 });
+                
                 tabsBar.insertBefore(el, document.getElementById('new-tab-btn'));
             });
         }
 
         function openBrowser(url) {
             document.getElementById('browser-overlay').classList.add('open');
-            addTab(url);
+            if (tabs.length === 0) {
+                addTab(url);
+            } else {
+                loadUrl(url);
+            }
         }
 
         function closeBrowser() {
             document.getElementById('browser-overlay').classList.remove('open');
+            document.getElementById('browser-frame').src = '';
             tabs = [];
             activeTabId = null;
         }
 
-        // --- REAL-TIME FUNCTIONAL CHAT SYSTEM ---
+        // URL bar submission
+        document.getElementById('browser-url-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const url = normalizeUrl(e.target.value);
+                if (url) loadUrl(url);
+            }
+        });
+
+        /* =========================================
+           3. LOCALSTORAGE CHAT SYSTEM
+        ========================================= */
         let authMode = 'login';
         let currentUser = JSON.parse(localStorage.getItem('farius_session')) || null;
 
@@ -825,6 +871,7 @@
             }
         }
 
+        // Toggle Login/Register
         document.getElementById('tab-login').addEventListener('click', () => {
             authMode = 'login';
             document.getElementById('tab-login').classList.add('active');
@@ -843,6 +890,7 @@
             authError.textContent = '';
         });
 
+        // Authentication Logic
         document.getElementById('chat-auth-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const userVal = document.getElementById('chat-username').value.trim();
@@ -856,6 +904,7 @@
                 }
                 users[userVal] = { password: passVal };
                 localStorage.setItem('farius_users', JSON.stringify(users));
+                
                 currentUser = { username: userVal };
                 localStorage.setItem('farius_session', JSON.stringify(currentUser));
                 updateChatState();
@@ -868,17 +917,23 @@
                 localStorage.setItem('farius_session', JSON.stringify(currentUser));
                 updateChatState();
             }
+            
+            // Clear inputs
+            document.getElementById('chat-username').value = '';
+            document.getElementById('chat-password').value = '';
         });
 
+        // Logout Logic
         document.getElementById('chat-logout').addEventListener('click', () => {
             currentUser = null;
             localStorage.removeItem('farius_session');
             updateChatState();
         });
 
+        // Messaging Logic
         function getMessages() {
             return JSON.parse(localStorage.getItem('farius_messages')) || [
-                { user: 'System', text: 'Welcome to Farius Lounge! Chat with others in real-time.' }
+                { user: 'System', text: 'Welcome to Farius Lounge! Messages sync across browser tabs.' }
             ];
         }
 
@@ -887,7 +942,7 @@
             const msgs = getMessages();
             container.innerHTML = msgs.map(m => `
                 <div class="chat-msg ${currentUser && m.user === currentUser.username ? 'mine' : ''}">
-                    <span class="chat-msg-user">${m.user}</span>
+                    <span class="chat-msg-user">${escapeHtml(m.user)}</span>
                     <div class="chat-msg-text">${escapeHtml(m.text)}</div>
                 </div>
             `).join('');
@@ -900,6 +955,7 @@
             return div.innerHTML;
         }
 
+        // Send Message
         document.getElementById('chat-compose').addEventListener('submit', (e) => {
             e.preventDefault();
             const input = document.getElementById('chat-message-input');
@@ -908,59 +964,91 @@
 
             const msgs = getMessages();
             msgs.push({ user: currentUser.username, text: text });
+            
+            // Keep array size manageable
+            if (msgs.length > 100) msgs.shift();
+            
             localStorage.setItem('farius_messages', JSON.stringify(msgs));
             input.value = '';
             renderMessages();
         });
 
+        // Sync messages across different browser tabs instantly
         window.addEventListener('storage', (e) => {
             if (e.key === 'farius_messages') renderMessages();
         });
 
-        // Event Bindings
+        /* =========================================
+           4. GLOBAL EVENT LISTENERS & UI
+        ========================================= */
         document.getElementById('farium-chat-launch').addEventListener('click', () => {
             chatOverlay.classList.add('open');
             updateChatState();
         });
-        document.getElementById('chat-close').addEventListener('click', () => chatOverlay.classList.remove('open'));
+        
+        document.getElementById('chat-close').addEventListener('click', () => {
+            chatOverlay.classList.remove('open');
+        });
         
         document.getElementById('search-go').addEventListener('click', () => {
             const url = normalizeUrl(document.getElementById('search-input').value);
             if (url) openBrowser(url);
         });
+        
         document.getElementById('search-input').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') document.getElementById('search-go').click();
         });
+        
         document.querySelectorAll('#app-buttons .app-button[data-url]').forEach(btn => {
             btn.addEventListener('click', () => openBrowser(btn.dataset.url));
         });
+        
         document.getElementById('browser-close').addEventListener('click', closeBrowser);
         document.getElementById('new-tab-btn').addEventListener('click', () => addTab(null));
 
-        // Background Animation
+        /* =========================================
+           5. BACKGROUND PARTICLE ANIMATION
+        ========================================= */
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+        
+        function resize() { 
+            canvas.width = innerWidth; 
+            canvas.height = innerHeight; 
+        }
+        
         function initParticles() {
             particles = Array.from({ length: 40 }, () => ({
-                x: Math.random() * innerWidth, y: Math.random() * innerHeight,
-                r: Math.random() * 1.5 + 0.5, vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2
+                x: Math.random() * innerWidth, 
+                y: Math.random() * innerHeight,
+                r: Math.random() * 1.5 + 0.5, 
+                vx: (Math.random() - 0.5) * 0.2, 
+                vy: (Math.random() - 0.5) * 0.2
             }));
         }
+        
         function draw() {
             ctx.clearRect(0, 0, innerWidth, innerHeight);
             ctx.fillStyle = 'rgba(255,255,255,0.3)';
             particles.forEach(p => {
-                p.x += p.vx; p.y += p.vy;
-                if (p.x < 0) p.x = innerWidth; if (p.x > innerWidth) p.x = 0;
-                if (p.y < 0) p.y = innerHeight; if (p.y > innerHeight) p.y = 0;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                p.x += p.vx; 
+                p.y += p.vy;
+                if (p.x < 0) p.x = innerWidth; 
+                if (p.x > innerWidth) p.x = 0;
+                if (p.y < 0) p.y = innerHeight; 
+                if (p.y > innerHeight) p.y = 0;
+                ctx.beginPath(); 
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); 
+                ctx.fill();
             });
             requestAnimationFrame(draw);
         }
+        
         window.addEventListener('resize', () => { resize(); initParticles(); });
-        resize(); initParticles(); draw();
+        resize(); 
+        initParticles(); 
+        draw();
     </script>
 </body>
 </html>
